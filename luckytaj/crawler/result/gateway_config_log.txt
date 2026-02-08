@@ -1,0 +1,38 @@
+======================================================================
+           GATEWAY CONFIGURATION LOG
+======================================================================
+Date: 2026-02-02 15:43:16
+======================================================================
+
+Esewa_bank_Shankar Yadav_20250612
+---------------------------------
+   Proceed entire gateway? (ENTER/n): 
+[DEBUG] User input: '' (length: 0)
+[DEBUG] Input bytes: []
+     ✅  Proceeding with Esewa_bank_Shankar Yadav_20250612
+   Start Order ID for DEPOSITS (press Enter to proceed all / 'skip' to skip deposits): 
+   Start Order ID for WITHDRAWALS (press Enter to proceed all / 'skip' to skip withdrawals): 
+
+Laxmi_bank_Baijianath_20250407
+------------------------------
+   Proceed entire gateway? (ENTER/n): 
+[DEBUG] User input: '' (length: 0)
+[DEBUG] Input bytes: []
+     ✅  Proceeding with Laxmi_bank_Baijianath_20250407
+   Start Order ID for DEPOSITS (press Enter to proceed all / 'skip' to skip deposits): 
+   Start Order ID for WITHDRAWALS (press Enter to proceed all / 'skip' to skip withdrawals): 
+
+Laxmi_bank_Subash Sunar_20250806
+--------------------------------
+   Proceed entire gateway? (ENTER/n): 
+[DEBUG] User input: '' (length: 0)
+[DEBUG] Input bytes: []
+     ✅  Proceeding with Laxmi_bank_Subash Sunar_20250806
+   Start Order ID for DEPOSITS (press Enter to proceed all / 'skip' to skip deposits): 
+   Start Order ID for WITHDRAWALS (press Enter to proceed all / 'skip' to skip withdrawals): 
+
+======================================================================
+           CONFIGURATION SUMMARY
+======================================================================
+
+No start order IDs configured. Will process all transactions.

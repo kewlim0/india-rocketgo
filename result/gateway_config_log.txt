@@ -1,0 +1,56 @@
+======================================================================
+           GATEWAY CONFIGURATION LOG (Balance-Based)
+======================================================================
+Date: 2026-02-06 12:29:16
+======================================================================
+
+CITIZENS_BANK_PRABESH KUMAR YADAV_20251204
+------------------------------------------
+   Proceed with this gateway? (ENTER/n): 
+     Proceeding with CITIZENS_BANK_PRABESH KUMAR YADAV_20251204
+   Enter balance amount: 115553.90
+     No records found with balance: 115553.90
+   Enter balance amount: 116553.90
+     No records found with balance: 116553.90
+   Enter balance amount: 105553.90
+     Found 1 matching record:
+     Record #33
+     Order ID: 27572
+     Time: 2026-02-05 11:44:45
+     Starting from timestamp: 2026-02-05 11:44:45
+
+
+Esewa_bank_Shankar Yadav_20250612
+---------------------------------
+   Proceed with this gateway? (ENTER/n): 19766.33
+     Unknown input '19766.33', proceeding with Esewa_bank_Shankar Yadav_20250612
+   Enter balance amount: 19766.33
+     Found 1 matching record:
+     Record #9
+     Order ID: 27565
+     Time: 2026-02-05 10:01:08
+     Starting from timestamp: 2026-02-05 10:01:08
+
+
+LNWPAY
+------
+   Proceed with this gateway? (ENTER/n): 
+     Proceeding with LNWPAY
+   Enter balance amount: 92501.92
+     Found 1 matching record:
+     Record #42
+     Order ID: 27571
+     Time: 2026-02-05 11:31:03
+     Starting from timestamp: 2026-02-05 11:31:03
+
+
+======================================================================
+           CONFIGURATION SUMMARY
+======================================================================
+CITIZENS_BANK_PRABESH KUMAR YADAV_20251204:
+   Processing transactions AFTER: 2026-02-05 11:44:45
+Esewa_bank_Shankar Yadav_20250612:
+   Processing transactions AFTER: 2026-02-05 10:01:08
+LNWPAY:
+   Processing transactions AFTER: 2026-02-05 11:31:03
+======================================================================
