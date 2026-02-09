@@ -153,13 +153,26 @@ def click_search_button(driver):
             )
             search_button.click()
             print(f"[INFO] Clicked Search button using: {selector}")
-            time.sleep(3)
+            _wait_for_search_animation(driver)
             return
         except Exception:
             continue
     print("[WARNING] Could not find Search button automatically.")
     input("Please click the Search button manually, then press ENTER here to continue...")
-    time.sleep(2)
+    _wait_for_search_animation(driver)
+
+
+def _wait_for_search_animation(driver):
+    """Wait for table refresh to finish after Search is clicked."""
+    try:
+        WebDriverWait(driver, 20).until(
+            EC.invisibility_of_element_located((By.CLASS_NAME, "ajaxLoader"))
+        )
+        print("[INFO] Table refresh complete")
+    except Exception:
+        print("[DEBUG] ajaxLoader not detected, continuing...")
+    time.sleep(1)
+
 
 def select_per_page(driver, value="50"):
     """Select per-page count from the dropdown (e.g. '50')."""
@@ -171,14 +184,13 @@ def select_per_page(driver, value="50"):
         per_page_trigger.click()
         time.sleep(1)
 
-        # Click the target option
+        # Click the target option by data-slug
         option = WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable((By.XPATH,
-                f"//div[contains(@class,'o-select-dropdown')]//div[contains(@class,'o-select-option') and normalize-space()='{value}'] | "
-                f"//div[contains(@class,'o-select-dropdown')]//*[normalize-space()='{value}']"
+            EC.presence_of_element_located((By.CSS_SELECTOR,
+                f"div.o-select-option span[data-slug='{value}']"
             ))
         )
-        option.click()
+        driver.execute_script("arguments[0].click();", option)
         print(f"[INFO] Set Per Page to {value}")
         time.sleep(3)
     except Exception as e:
@@ -309,6 +321,7 @@ if start_date and end_date:
     set_browser_date(driver, "Register From", start_date)
     set_browser_date(driver, "Register To", end_date)
     click_search_button(driver)
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     time.sleep(1)
     select_per_page(driver, "50")
     time.sleep(1)
@@ -408,6 +421,7 @@ def print_grouped_phone_results(grouped_data):
             for i, record in enumerate(records, 1):
                 line = (
                     f"#{i} - Phone: {record['Phone Number']}, "
+                    f"Player ID: {record['Player ID']}, "
                     f"Email: {record['Email']}, "
                     f"Affiliate: {record.get('Affiliate Code', '')}\n"
                 )
@@ -473,10 +487,12 @@ def run_optimized_phone_extraction(driver, start_date, end_date):
 
         page_records = extract_phone_data(driver)
 
-        # Check for duplicates and add to collection
+        # Check for duplicates and add to collection (skip dedup for "-")
         for record in page_records:
             phone_number = record["Phone Number"]
-            if phone_number not in seen_phone_numbers:
+            if phone_number == "-":
+                all_collected_records.append(record)
+            elif phone_number not in seen_phone_numbers:
                 all_collected_records.append(record)
                 seen_phone_numbers.add(phone_number)
             else:
@@ -538,7 +554,7 @@ def show_post_crawl_menu():
     # Define script paths relative to project structure
     scripts = {
         "1": os.path.join(project_root, "add_data", "add-player"),
-        "2": os.path.join(script_dir, "deposit.py"),  # In same crawler folder
+        "2": os.path.join(script_dir, "transaction.py"),  # In same crawler folder
         "3": os.path.join(project_root, "add_data", "add_deposit"),
     }
 

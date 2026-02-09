@@ -93,6 +93,44 @@ def navigate_to_deposit_page(driver, config):
 
     print(f"[INFO] Navigation complete for {config['name']}")
 
+def navigate_to_withdrawal_page(driver, config):
+    """Navigate to the withdrawal page (site-specific)"""
+    wait = WebDriverWait(driver, 40)
+
+    if config.get('has_navigation'):
+        submenu_item = wait.until(EC.element_to_be_clickable(
+            (By.XPATH, "//a[span[@class='bullet-point'] and text()='Withdraw']")
+        ))
+        submenu_item.click()
+
+        WebDriverWait(driver, 20).until(
+            EC.invisibility_of_element_located((By.CSS_SELECTOR, ".box.box-info"))
+        )
+        print("[INFO] Panel load complete")
+        time.sleep(2)
+
+        WebDriverWait(driver, 20).until(
+            EC.invisibility_of_element_located((By.CLASS_NAME, "ajaxLoader"))
+        )
+        print("[INFO] ajaxLoader complete")
+        time.sleep(2)
+
+    if config.get('has_status_filter'):
+        status_dropdown = WebDriverWait(driver, 20).until(
+            EC.element_to_be_clickable((By.XPATH,
+                "//div[@class='label' and text()='Status']/following-sibling::div//div[contains(@class,'o-input-wrapper')]"
+            ))
+        )
+        status_dropdown.click()
+        time.sleep(1)
+        approved_option = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//*[contains(text(),'Approved')]"))
+        )
+        approved_option.click()
+        print("[INFO] Status filter set to 'Approved'")
+
+    print(f"[INFO] Withdrawal navigation complete for {config['name']}")
+
 def set_browser_date(driver, label_text, date_value):
     """Set a date in the browser's calendar picker by label ('Start Date' or 'End Date').
     date_value should be a datetime.date object."""
@@ -171,13 +209,50 @@ def click_search_button(driver):
             )
             search_button.click()
             print(f"[INFO] Clicked Search button using: {selector}")
-            time.sleep(3)
+            _wait_for_search_animation(driver)
             return
         except Exception:
             continue
     print("[WARNING] Could not find Search button automatically.")
-    input("👉 Please click the Search button manually, then press ENTER here to continue...")
-    time.sleep(2)
+    input("Please click the Search button manually, then press ENTER here to continue...")
+    _wait_for_search_animation(driver)
+
+
+def _wait_for_search_animation(driver):
+    """Wait for table refresh to finish after Search is clicked."""
+    try:
+        WebDriverWait(driver, 20).until(
+            EC.invisibility_of_element_located((By.CLASS_NAME, "ajaxLoader"))
+        )
+        print("[INFO] Table refresh complete")
+    except Exception:
+        print("[DEBUG] ajaxLoader not detected, continuing...")
+    time.sleep(1)
+
+def select_timezone(driver, slug="+05:30"):
+    """Select a timezone from the Time Zone dropdown by data-slug value."""
+    try:
+        # Click the Time Zone dropdown trigger
+        tz_trigger = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH,
+                "//div[@class='label' and text()='Time Zone']/following-sibling::div[contains(@class,'o-dp-trig')]"
+            ))
+        )
+        tz_trigger.click()
+        time.sleep(1)
+
+        # Find the option by data-slug and click via JS (options have disabled attribute)
+        tz_span = WebDriverWait(driver, 5).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR,
+                f"div.o-select-body span[data-slug='{slug}']"
+            ))
+        )
+        driver.execute_script("arguments[0].click();", tz_span)
+        print(f"[INFO] Set Time Zone to GMT{slug}")
+        time.sleep(1)
+    except Exception as e:
+        print(f"[WARNING] Could not set Time Zone to GMT{slug}: {e}")
+        input("Please select the timezone manually, then press ENTER here to continue...")
 
 def select_per_page(driver, value="50"):
     """Select per-page count from the dropdown (e.g. '50')."""
@@ -189,14 +264,13 @@ def select_per_page(driver, value="50"):
         per_page_trigger.click()
         time.sleep(1)
 
-        # Click the target option
+        # Click the target option by data-slug
         option = WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable((By.XPATH,
-                f"//div[contains(@class,'o-select-dropdown')]//div[contains(@class,'o-select-option') and normalize-space()='{value}'] | "
-                f"//div[contains(@class,'o-select-dropdown')]//*[normalize-space()='{value}']"
+            EC.presence_of_element_located((By.CSS_SELECTOR,
+                f"div.o-select-option span[data-slug='{value}']"
             ))
         )
-        option.click()
+        driver.execute_script("arguments[0].click();", option)
         print(f"[INFO] Set Per Page to {value}")
         time.sleep(3)
     except Exception as e:
@@ -360,7 +434,9 @@ if start_date and end_date:
     print(f"\033[1;33m[INFO]\033[0m Setting dates in browser...")
     set_browser_date(driver, "Start Date", start_date)
     set_browser_date(driver, "End Date", end_date)
+    select_timezone(driver, "+05:30")
     click_search_button(driver)
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     time.sleep(1)
     select_per_page(driver, "50")
     time.sleep(1)
@@ -496,37 +572,152 @@ def extract_transaction_data_with_date_filter(driver, start_date, end_date):
     return collected_records, should_stop_scraping
 
 
+def extract_withdrawal_data_with_date_filter(driver, start_date, end_date):
+    """
+    Extracts withdrawal data using the withdrawal table column mapping with early-stopping date filtering.
+    Withdrawal columns: Order ID=1, Phone=8, Amount=12, Tax Fee=13, Time=18, Gateway=24
+    Returns (collected_records, should_stop_scraping)
+    """
+    print(f"[INFO] Filtering withdrawals for dates: {start_date} to {end_date}")
 
-def print_grouped_results(gateway_groups):
-    print(f"[DEBUG] print_grouped_results called with {len(gateway_groups)} gateway groups")
-    for gateway, records in gateway_groups.items():
-        print(f"[DEBUG] Gateway '{gateway}' has {len(records)} records")
+    selectors_to_try = [
+        "table.tableInfo tbody tr",
+        "table.new_data-table tbody tr",
+        "table tbody tr",
+        ".table tbody tr",
+        "tbody tr"
+    ]
 
-    grand_total = 0
-    grand_tax_total = 0
+    rows = []
+    working_selector = None
 
-    # Get script directory and build path to result folder
+    for selector in selectors_to_try:
+        print(f"[DEBUG] Trying selector: {selector}")
+        test_rows = driver.find_elements(By.CSS_SELECTOR, selector)
+        print(f"[DEBUG] Found {len(test_rows)} rows with selector: {selector}")
+        if len(test_rows) > 0:
+            rows = test_rows
+            working_selector = selector
+            print(f"[SUCCESS] Using selector: {selector}")
+            break
+
+    if not rows:
+        print("[ERROR] No table rows found with any selector!")
+        return [], True
+
+    print(f"[INFO] Total rows found: {len(rows)} using selector: {working_selector}")
+
+    collected_records = []
+    should_stop_scraping = False
+
+    time.sleep(1)
+
+    for idx in range(len(rows)):
+        try:
+            current_rows = driver.find_elements(By.CSS_SELECTOR, working_selector)
+            if idx >= len(current_rows):
+                print(f"[WARNING] Row {idx + 1} no longer exists. Skipping.")
+                continue
+
+            row = current_rows[idx]
+            cols = row.find_elements(By.TAG_NAME, 'td')
+
+            if len(cols) < 5:
+                print(f"[WARNING] Row {idx + 1} has only {len(cols)} columns. Skipping.")
+                continue
+
+            first_col_text = cols[0].text.strip()
+            if "Page Summary" in first_col_text or "Total Summary" in first_col_text:
+                print(f"[INFO] Skipping summary row: '{first_col_text}'")
+                continue
+
+            # Time from column 18
+            full_date_str = cols[18].text.strip() if len(cols) > 18 else ""
+            if not full_date_str:
+                print(f"[WARNING] No date in row {idx + 1}, skipping")
+                continue
+
+            try:
+                date_str = full_date_str.split(" ")[0]
+                row_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+
+                if row_date > end_date:
+                    print(f"[DEBUG] Row {idx + 1} too new ({row_date}), skipping")
+                    continue
+
+                if row_date < start_date:
+                    print(f"[INFO] Row {idx + 1} too old ({row_date}), stopping scraping")
+                    should_stop_scraping = True
+                    break
+
+                # Amount from column 12
+                amount_text = cols[12].text.strip().replace("Rs", "").replace(",", "").strip()
+                try:
+                    amount = float(amount_text) if amount_text else 0.0
+                except ValueError:
+                    print(f"[WARNING] Invalid amount '{amount_text}' in row {idx + 1}, setting to 0.0")
+                    amount = 0.0
+
+                # Tax Fee from column 13
+                tax_text = cols[13].text.strip().replace(",", "")
+                try:
+                    tax_fee = float(tax_text) if tax_text else 0.0
+                except ValueError:
+                    print(f"[WARNING] Invalid tax fee '{tax_text}' in row {idx + 1}, setting to 0.0")
+                    tax_fee = 0.0
+
+                record = {
+                    "Order ID": cols[1].text.strip(),
+                    "Phone Number": cols[8].text.strip(),
+                    "Amount": amount,
+                    "Tax Fee": tax_fee,
+                    "Time": full_date_str,
+                    "Gateway": cols[24].text.strip() if len(cols) > 24 else "Unknown",
+                    "Date": row_date
+                }
+                collected_records.append(record)
+
+            except ValueError as e:
+                print(f"[WARNING] Invalid date format '{full_date_str}' in row {idx + 1}: {e}")
+                continue
+
+        except Exception as e:
+            print(f"[ERROR] Failed to process row {idx + 1}: {e}")
+            continue
+
+    print(f"[INFO] Collected {len(collected_records)} withdrawal records from this page")
+    print(f"[INFO] Should stop scraping: {should_stop_scraping}")
+
+    return collected_records, should_stop_scraping
+
+
+def get_output_file_path():
+    """Get the path to the output file."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    # Go up two levels: crawler -> luckytaj -> rocketgo auto
     working_dir = os.path.dirname(os.path.dirname(script_dir))
     result_dir = os.path.join(working_dir, "result")
     os.makedirs(result_dir, exist_ok=True)
-    output_file = os.path.join(result_dir, "selenium-transaction_history.txt")
+    return os.path.join(result_dir, "selenium-transaction_history.txt")
 
-    with open(output_file, "w", encoding="utf-8") as f:
+def print_grouped_results(gateway_groups, section_type="DEPOSITS", file_mode="w"):
+    print(f"[DEBUG] print_grouped_results called with {len(gateway_groups)} gateway groups ({section_type})")
+    for gateway, records in gateway_groups.items():
+        print(f"[DEBUG] Gateway '{gateway}' has {len(records)} records")
+
+    output_file = get_output_file_path()
+
+    with open(output_file, file_mode, encoding="utf-8") as f:
         f.write("="*80 + "\n")
-        f.write("                              DEPOSITS\n")
+        f.write(f"                              {section_type}\n")
         f.write("="*80 + "\n")
         print(f"\033[92m{'='*80}\033[0m")
-        print(f"\033[92m                              DEPOSITS\033[0m")
+        print(f"\033[92m                              {section_type}\033[0m")
         print(f"\033[92m{'='*80}\033[0m")
 
         for gateway, records in gateway_groups.items():
             total_amount = sum(record["Amount"] if isinstance(record["Amount"], (int, float)) else float(record["Amount"].replace(",", "")) for record in records)
-            grand_total += total_amount
 
             total_tax_amount = sum(float(record.get("Tax Fee", 0)) for record in records)
-            grand_tax_total += total_tax_amount
 
             header = f"\n==== {gateway} ({len(records)} record{'s' if len(records) != 1 else ''}) | Total Amount: Rs {total_amount:,.2f} | Total Fee: Rs {total_tax_amount:.2f} ====\n"
             print(f"\033[92m{header}\033[0m")
@@ -561,43 +752,96 @@ def print_grouped_results(gateway_groups):
             print(f"\033[93m{footer}\033[0m")
             f.write(footer)
 
-        total_records = sum(len(records) for records in gateway_groups.values())
+def write_grand_total(deposit_groups, withdrawal_groups):
+    """Write combined grand total for deposits and withdrawals to output file."""
+    output_file = get_output_file_path()
 
-        # Grand total summary
+    with open(output_file, "a", encoding="utf-8") as f:
         f.write("\n")
-        grand_total_header = f"=========================== GRAND TOTAL for All Gateways ===========================\n\n"
+        grand_total_header = "=========================== GRAND TOTAL for All Gateways ===========================\n\n"
         print(f"\033[92m{grand_total_header}\033[0m", end="")
         f.write(grand_total_header)
 
-        print(f"\033[95m  DEPOSITS Records: \033[92m{total_records}\033[95m\n\n\033[0m", end="")
-        f.write(f"  DEPOSITS Records: {total_records}\n\n")
+        # Deposit summary
+        deposit_records = sum(len(records) for records in deposit_groups.values()) if deposit_groups else 0
+        deposit_amount = sum(sum(r["Amount"] for r in records) for records in deposit_groups.values()) if deposit_groups else 0
 
-        # Per-gateway summary
-        for gateway, records in gateway_groups.items():
-            gateway_amount = sum(r["Amount"] for r in records)
-            total_tax_amount = round(sum(float(r.get("Tax Fee", 0)) for r in records), 2)
+        print(f"\033[95m  DEPOSITS Records: \033[92m{deposit_records}\033[95m\n\033[0m", end="")
+        f.write(f"  DEPOSITS Records: {deposit_records}\n")
+        print(f"\033[95m  DEPOSITS Amount: \033[92m{deposit_amount:,.2f}\033[95m\n\n\033[0m", end="")
+        f.write(f"  DEPOSITS Amount: {deposit_amount:,.2f}\n\n")
 
-            # Extract date from the first record's time
-            try:
-                if records[0]["Time"] and records[0]["Time"].strip():
-                    transaction_date = datetime.strptime(records[0]["Time"], "%Y-%m-%d %H:%M:%S").strftime("%m/%d/%Y")
-                else:
+        # Per-gateway deposit summary
+        if deposit_groups:
+            for gateway, records in deposit_groups.items():
+                gateway_amount = sum(r["Amount"] for r in records)
+                total_tax_amount = round(sum(float(r.get("Tax Fee", 0)) for r in records), 2)
+                try:
+                    if records[0]["Time"] and records[0]["Time"].strip():
+                        transaction_date = datetime.strptime(records[0]["Time"], "%Y-%m-%d %H:%M:%S").strftime("%m/%d/%Y")
+                    else:
+                        transaction_date = "Unknown"
+                except (ValueError, IndexError):
                     transaction_date = "Unknown"
-            except (ValueError, IndexError):
-                transaction_date = "Unknown"
 
-            gateway_header = f"==== pg {gateway}_{transaction_date} ====\n\n"
-            print(f"\033[92m{gateway_header}\033[0m", end="")
-            f.write(gateway_header)
+                gateway_header = f"==== pg {gateway}_{transaction_date} ====\n\n"
+                print(f"\033[92m{gateway_header}\033[0m", end="")
+                f.write(gateway_header)
 
-            print(f"\033[95m  DEPOSITS Records: \033[92m{len(records)}\033[95m\n\033[0m", end="")
-            print(f"\033[95m  DEPOSITS Amount: \033[92m{gateway_amount:,.2f}\033[95m\n\n\033[0m", end="")
-            f.write(f"  DEPOSITS Records: {len(records)}\n")
-            f.write(f"  DEPOSITS Amount: {gateway_amount:,.2f}\n\n")
+                print(f"\033[95m  DEPOSITS Records: \033[92m{len(records)}\033[95m\n\033[0m", end="")
+                print(f"\033[95m  DEPOSITS Amount: \033[92m{gateway_amount:,.2f}\033[95m\n\n\033[0m", end="")
+                f.write(f"  DEPOSITS Records: {len(records)}\n")
+                f.write(f"  DEPOSITS Amount: {gateway_amount:,.2f}\n\n")
 
-            gateway_tax_line = f"(depo) pg {gateway} {transaction_date} | Total Fee: Rs {total_tax_amount:.2f}\n"
-            print(f"\033[95m{gateway_tax_line}\033[0m")
-            f.write(gateway_tax_line)
+                gateway_tax_line = f"(depo) pg {gateway} {transaction_date} | Total Fee: Rs {total_tax_amount:.2f}\n"
+                print(f"\033[95m{gateway_tax_line}\033[0m")
+                f.write(gateway_tax_line)
+
+        # Withdrawal summary
+        if withdrawal_groups:
+            withdrawal_records = sum(len(records) for records in withdrawal_groups.values())
+            withdrawal_amount = sum(sum(r["Amount"] for r in records) for records in withdrawal_groups.values())
+
+            print(f"\033[95m  WITHDRAWALS Records: \033[92m{withdrawal_records}\033[95m\n\033[0m", end="")
+            f.write(f"\n  WITHDRAWALS Records: {withdrawal_records}\n")
+            print(f"\033[95m  WITHDRAWALS Amount: \033[92m{withdrawal_amount:,.2f}\033[95m\n\n\033[0m", end="")
+            f.write(f"  WITHDRAWALS Amount: {withdrawal_amount:,.2f}\n\n")
+
+            for gateway, records in withdrawal_groups.items():
+                gateway_amount = sum(r["Amount"] for r in records)
+                total_tax_amount = round(sum(float(r.get("Tax Fee", 0)) for r in records), 2)
+                try:
+                    if records[0]["Time"] and records[0]["Time"].strip():
+                        transaction_date = datetime.strptime(records[0]["Time"], "%Y-%m-%d %H:%M:%S").strftime("%m/%d/%Y")
+                    else:
+                        transaction_date = "Unknown"
+                except (ValueError, IndexError):
+                    transaction_date = "Unknown"
+
+                gateway_header = f"==== pg {gateway}_{transaction_date} ====\n\n"
+                print(f"\033[92m{gateway_header}\033[0m", end="")
+                f.write(gateway_header)
+
+                print(f"\033[95m  WITHDRAWALS Records: \033[92m{len(records)}\033[95m\n\033[0m", end="")
+                print(f"\033[95m  WITHDRAWALS Amount: \033[92m{gateway_amount:,.2f}\033[95m\n\n\033[0m", end="")
+                f.write(f"  WITHDRAWALS Records: {len(records)}\n")
+                f.write(f"  WITHDRAWALS Amount: {gateway_amount:,.2f}\n\n")
+
+                gateway_tax_line = f"(wd) pg {gateway} {transaction_date} | Total Fee: Rs {total_tax_amount:.2f}\n"
+                print(f"\033[95m{gateway_tax_line}\033[0m")
+                f.write(gateway_tax_line)
+
+        # Combined totals
+        combined_amount = deposit_amount + (sum(sum(r["Amount"] for r in records) for records in withdrawal_groups.values()) if withdrawal_groups else 0)
+        combined_records = deposit_records + (sum(len(records) for records in withdrawal_groups.values()) if withdrawal_groups else 0)
+        f.write(f"\n{'='*80}\n")
+        f.write(f"  COMBINED Total Records: {combined_records}\n")
+        f.write(f"  COMBINED Total Amount: Rs {combined_amount:,.2f}\n")
+        f.write(f"{'='*80}\n")
+        print(f"\033[92m{'='*80}\033[0m")
+        print(f"\033[92m  COMBINED Total Records: {combined_records}\033[0m")
+        print(f"\033[92m  COMBINED Total Amount: Rs {combined_amount:,.2f}\033[0m")
+        print(f"\033[92m{'='*80}\033[0m")
 
 
 
@@ -703,23 +947,27 @@ gateway_groups = defaultdict(list)  # Global collector
 seen_order_ids = set()  # Track seen Order IDs to prevent duplicates
 
 
-def run_optimized_transaction_extraction(driver, start_date, end_date):
+def run_optimized_transaction_extraction(driver, start_date, end_date, mode="deposit"):
     """
     Optimized extraction with early stopping based on date range.
     Stops scraping when encountering dates older than start_date.
+    mode: "deposit" or "withdrawal" — selects the correct column mapping.
     """
     page_counter = 1
     all_collected_records = []
     duplicate_count = 0
     stop_scraping = False
-    
-    print(f"\033[92m[INFO] Starting optimized extraction for date range: {start_date} to {end_date}\033[0m")
-    
+
+    extract_fn = extract_withdrawal_data_with_date_filter if mode == "withdrawal" else extract_transaction_data_with_date_filter
+    label = "withdrawal" if mode == "withdrawal" else "deposit"
+
+    print(f"\033[92m[INFO] Starting optimized {label} extraction for date range: {start_date} to {end_date}\033[0m")
+
     while not stop_scraping:
         print(f"\033[92m[INFO] Scraping page {page_counter}...\033[0m")
-        
+
         # Extract data from current page with date filtering
-        page_records, should_stop = extract_transaction_data_with_date_filter(
+        page_records, should_stop = extract_fn(
             driver, start_date, end_date
         )
         
@@ -778,10 +1026,10 @@ def run_optimized_transaction_extraction(driver, start_date, end_date):
     print(f"  - Unique gateways: {len(gateway_groups)}")
     print(f"  - Duplicates skipped: {duplicate_count}")
     
-    if total_records > 0:
-        print_grouped_results(gateway_groups)
-    else:
+    if total_records == 0:
         print("\033[93m[WARNING] No records found in the specified date range.\033[0m")
+
+    return gateway_groups
     
 def show_post_crawl_menu():
     """Show menu after crawling is complete"""
@@ -832,7 +1080,34 @@ def show_post_crawl_menu():
             return
 
 def main():
-    run_optimized_transaction_extraction(driver, start_date, end_date)
+    # Run deposit extraction
+    deposit_groups = run_optimized_transaction_extraction(driver, start_date, end_date)
+
+    # Ask user about withdrawals
+    print("\n" + "="*60)
+    choice = input("Continue crawling withdrawals? (y/n): ").strip().lower()
+
+    withdrawal_groups = {}
+    if choice == 'y':
+        navigate_to_withdrawal_page(driver, config)
+        set_browser_date(driver, "Start Date", start_date)
+        set_browser_date(driver, "End Date", end_date)
+        select_timezone(driver, "+05:30")
+        click_search_button(driver)
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(1)
+        select_per_page(driver, "50")
+        time.sleep(1)
+        # Reset seen_order_ids for withdrawal extraction
+        seen_order_ids.clear()
+        withdrawal_groups = run_optimized_transaction_extraction(driver, start_date, end_date, mode="withdrawal")
+
+    # Write results to file
+    print_grouped_results(deposit_groups, section_type="DEPOSITS", file_mode="w")
+    if withdrawal_groups:
+        print_grouped_results(withdrawal_groups, section_type="WITHDRAWALS", file_mode="a")
+    write_grand_total(deposit_groups, withdrawal_groups)
+
     time.sleep(5)
     driver.quit()
     cleanup_terminal()

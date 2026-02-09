@@ -13,7 +13,6 @@ from selenium.webdriver.common.keys import Keys
 import os
 from selenium.webdriver.support.ui import Select
 from datetime import datetime
-from collections import defaultdict
 from os_date_utils import select_os_type, format_date_for_calendar
 import re
 from selenium.webdriver import ActionChains
@@ -407,15 +406,15 @@ os_type = select_os_type()
 # ======== Website Configuration ========
 website_configs = {
     "1": {
-        "name": "NepalWin",
-        "merchant_code": "nepalwin",
-        "username": "kewlim888_nepalwin",
-        "password": "aaaa1111"
+        "name": "luckytaj.com",
+        "merchant_code": "luckytaj",
+        "username": "Admin_Json",
+        "password": "json8888"
     },
     "2": {
-        "name": "95np",
-        "merchant_code": "95np",
-        "username": "alex_95np",
+        "name": "1taj.com",
+        "merchant_code": "1taj",
+        "username": "alex_1taj",
         "password": "asdf8888"
     }
 }
@@ -455,270 +454,44 @@ def remove_bom(line):
         return line.lstrip(BOM)
     return line
 
-def get_start_by_balance():
-    """Get start timestamp for each gateway by searching for balance amount"""
-    print("\n" + "="*70)
-    print("           BALANCE-BASED START CONFIGURATION")
-    print("="*70)
-    print("Provide a balance amount for each gateway to find the starting point.")
-    print("Leave empty to process all transactions from the beginning.")
-    print("="*70)
+def get_start_by_transaction_id():
+    """Prompt user for last processed deposit and withdrawal IDs."""
+    print("\n" + "="*60)
+    print("     TRANSACTION ID FILTER")
+    print("="*60)
+    print("Enter the last processed transaction ID.")
+    print("Only transactions with a HIGHER numeric ID will be processed.")
+    print("Press Enter to skip (process all).\n")
 
-    # Get script directory and working directory for relative paths
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    # Go up two levels: add_data -> luckytaj -> rocketgo auto
-    working_dir = os.path.dirname(os.path.dirname(script_dir))
-    result_dir = os.path.join(working_dir, "result")
+    deposit_id = input("Last deposit ID (e.g. LTJPD164443) or Enter to skip: ").strip()
+    withdrawal_id = input("Last withdrawal ID (e.g. LTJPW12324) or Enter to skip: ").strip()
 
-    # Ensure result directory exists
-    os.makedirs(result_dir, exist_ok=True)
+    deposit_cutoff = None
+    withdrawal_cutoff = None
 
-    # Read the transaction file to get available gateways and parse all records
-    transaction_file = os.path.join(result_dir, "selenium-transaction_history.txt")
-    gateway_records = {}  # {gateway_name: [list of records]}
+    if deposit_id:
+        match = re.search(r'(\d+)$', deposit_id)
+        if match:
+            deposit_cutoff = int(match.group(1))
+            print(f"  → Will process deposits with ID > {deposit_cutoff}")
 
-    try:
-        with open(transaction_file, 'r', encoding='utf-8') as f:
-            lines = f.readlines()
+    if withdrawal_id:
+        match = re.search(r'(\d+)$', withdrawal_id)
+        if match:
+            withdrawal_cutoff = int(match.group(1))
+            print(f"  → Will process withdrawals with ID > {withdrawal_cutoff}")
 
-        current_gateway = None
-        current_record = {}
-        record_number = None
+    if not deposit_cutoff and not withdrawal_cutoff:
+        print("  → No filter set. Processing ALL transactions.")
 
-        for raw_line in lines:
-            line = remove_bom(raw_line.strip())
-
-            if not line:
-                continue
-
-            # Detect gateway header
-            if line.startswith("====") and "Total Amount" in line:
-                match = re.match(r"==== (.*?) \(", line)
-                if match:
-                    current_gateway = match.group(1)
-                    if current_gateway not in gateway_records:
-                        gateway_records[current_gateway] = []
-                continue
-
-            # Parse record number
-            if line.startswith("Record #"):
-                # Save previous record if exists
-                if current_record and current_gateway and record_number:
-                    gateway_records[current_gateway].append({
-                        'record_number': record_number,
-                        **current_record
-                    })
-                # Start new record
-                record_number = line.split("#")[1].strip()
-                current_record = {}
-                continue
-
-            # Parse record fields
-            if current_gateway and ":" in line:
-                key, value = line.split(":", 1)
-                key = key.strip()
-                value = value.strip()
-                current_record[key] = value
-
-        # Don't forget the last record
-        if current_record and current_gateway and record_number:
-            gateway_records[current_gateway].append({
-                'record_number': record_number,
-                **current_record
-            })
-
-    except FileNotFoundError:
-        print("Transaction history file not found.")
-        return {}
-
-    start_timestamps = {}
-
-    # Open log file for recording gateway configuration
-    log_file_path = os.path.join(result_dir, "gateway_config_log.txt")
-    config_log = open(log_file_path, 'w', encoding='utf-8')
-    config_log.write("="*70 + "\n")
-    config_log.write("           GATEWAY CONFIGURATION LOG (Balance-Based)\n")
-    config_log.write("="*70 + "\n")
-    config_log.write(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-    config_log.write("="*70 + "\n\n")
-
-    for gateway in sorted(gateway_records.keys()):
-        print(f"\n\033[1;35m{gateway}\033[0m")
-        print("-" * len(gateway))
-
-        # Log gateway name to file
-        config_log.write(f"{gateway}\n")
-        config_log.write("-" * len(gateway) + "\n")
-
-        # Ask if user wants to skip this entire gateway
-        import sys
-        sys.stdout.flush()
-
-        try:
-            skip_gateway = input(f"\033[1;32m   Proceed with this gateway? (ENTER/n): \033[0m").strip().lower()
-            config_log.write(f"   Proceed with this gateway? (ENTER/n): {skip_gateway if skip_gateway else ''}\n")
-
-            if skip_gateway in ['n', 'no']:
-                print(f"     Skipping {gateway} entirely")
-                config_log.write(f"     Skipping {gateway} entirely\n\n")
-                start_timestamps[gateway] = 'SKIP'
-                enhanced_print(f"[SKIP LOG] Gateway: {gateway} - All transactions set to SKIP")
-                continue
-            elif skip_gateway == '':
-                print(f"     Proceeding with {gateway}")
-                config_log.write(f"     Proceeding with {gateway}\n")
-            else:
-                print(f"     Unknown input '{skip_gateway}', proceeding with {gateway}")
-                config_log.write(f"     Unknown input '{skip_gateway}', proceeding with {gateway}\n")
-
-        except (KeyboardInterrupt, EOFError):
-            print("\n[INFO] Input interrupted, exiting...")
-            config_log.close()
-            sys.exit(0)
-
-        # Get balance amount
-        while True:
-            balance_input = input(f"\033[1;35m   Enter balance amount to search for\n\033[1;32m   (press Enter to process all): \033[0m").strip()
-            config_log.write(f"   Enter balance amount: {balance_input}\n")
-
-            if not balance_input:
-                print(f"     Will process all transactions for {gateway}")
-                config_log.write(f"     Will process all transactions\n\n")
-                break
-
-            try:
-                # Store original input for display
-                search_balance = balance_input
-                # Convert input to float for numeric comparison
-                search_balance_float = float(balance_input.replace(',', ''))
-
-                # Search for matching balance in this gateway's records
-                matching_records = []
-                for record in gateway_records[gateway]:
-                    record_balance = record.get('Balance', '').replace(',', '')
-                    try:
-                        # Compare as floats to handle "278681.9" == "278681.90"
-                        if record_balance and float(record_balance) == search_balance_float:
-                            matching_records.append(record)
-                    except ValueError:
-                        # Skip records with invalid balance format
-                        continue
-
-                if len(matching_records) == 0:
-                    print(f"     No records found with balance: {search_balance}")
-                    config_log.write(f"     No records found with balance: {search_balance}\n")
-                    retry = input(f"     Try another balance? (y/n): ").strip().lower()
-                    if retry != 'y':
-                        break
-                    continue
-
-                elif len(matching_records) == 1:
-                    record = matching_records[0]
-                    print(f"\n     Found 1 matching record:")
-                    print(f"     Record #{record['record_number']}")
-                    print(f"     Order ID: {record.get('Order ID')}")
-                    print(f"     Transaction Type: {record.get('Transaction Type')}")
-                    print(f"     Phone Number: {record.get('Phone Number')}")
-                    print(f"     Amount: {record.get('Amount')}")
-                    print(f"     Balance: {record.get('Balance')}")
-                    print(f"     Time: {record.get('Time')}")
-
-                    config_log.write(f"     Found 1 matching record:\n")
-                    config_log.write(f"     Record #{record['record_number']}\n")
-                    config_log.write(f"     Order ID: {record.get('Order ID')}\n")
-                    config_log.write(f"     Time: {record.get('Time')}\n")
-
-                    confirm = input(f"\n     Use this record as starting point? (y/n): ").strip().lower()
-                    if confirm == 'y':
-                        start_timestamps[gateway] = record.get('Time')
-                        print(f"     Will process all transactions AFTER: {record.get('Time')}")
-                        config_log.write(f"     Starting from timestamp: {record.get('Time')}\n\n")
-                        break
-                    else:
-                        continue
-
-                else:
-                    print(f"\n     Found {len(matching_records)} matching records:")
-                    for idx, record in enumerate(matching_records, 1):
-                        print(f"\n     [{idx}] Record #{record['record_number']}")
-                        print(f"         Order ID: {record.get('Order ID')}")
-                        print(f"         Transaction Type: {record.get('Transaction Type')}")
-                        print(f"         Phone Number: {record.get('Phone Number')}")
-                        print(f"         Amount: {record.get('Amount')}")
-                        print(f"         Balance: {record.get('Balance')}")
-                        print(f"         Time: {record.get('Time')}")
-
-                    config_log.write(f"     Found {len(matching_records)} matching records\n")
-                    for idx, record in enumerate(matching_records, 1):
-                        config_log.write(f"     [{idx}] Record #{record['record_number']} | Time: {record.get('Time')}\n")
-
-                    while True:
-                        choice = input(f"\n     Select record number (1-{len(matching_records)}) or 'r' to retry: ").strip()
-                        if choice.lower() == 'r':
-                            break
-                        try:
-                            choice_idx = int(choice) - 1
-                            if 0 <= choice_idx < len(matching_records):
-                                selected_record = matching_records[choice_idx]
-                                start_timestamps[gateway] = selected_record.get('Time')
-                                print(f"     Will process all transactions AFTER: {selected_record.get('Time')}")
-                                config_log.write(f"     Selected record [{choice}]\n")
-                                config_log.write(f"     Starting from timestamp: {selected_record.get('Time')}\n\n")
-                                break
-                            else:
-                                print(f"     Please enter a number between 1 and {len(matching_records)}")
-                        except ValueError:
-                            print(f"     Invalid input. Please enter a number or 'r'")
-
-                    if choice.lower() != 'r':
-                        break
-
-            except ValueError:
-                print(f"     Invalid balance format. Please enter a valid number (e.g., 278681.9 or 278681.90)")
-                config_log.write(f"     Invalid balance format entered\n")
-                continue
-            except Exception as e:
-                print(f"     Error: {e}")
-                config_log.write(f"     Error: {e}\n")
-                break
-
-        config_log.write("\n")
-
-    # Close the log file
-    config_log.write("="*70 + "\n")
-    config_log.write("           CONFIGURATION SUMMARY\n")
-    config_log.write("="*70 + "\n")
-
-    if start_timestamps:
-        print("\n" + "="*70)
-        print("           CONFIGURATION SUMMARY")
-        print("="*70)
-        for gateway, timestamp in start_timestamps.items():
-            print(f"{gateway}:")
-            config_log.write(f"{gateway}:\n")
-            if timestamp == 'SKIP':
-                print(f"   Status: \033[1;31mSKIPPED\033[0m")
-                config_log.write(f"   Status: SKIPPED\n")
-            else:
-                print(f"   Processing transactions AFTER: {timestamp}")
-                config_log.write(f"   Processing transactions AFTER: {timestamp}\n")
-        print("="*70)
-        config_log.write("="*70 + "\n")
-    else:
-        print("\n No start timestamps configured. Will process all transactions.")
-        config_log.write("\nNo start timestamps configured. Will process all transactions.\n")
-
-    config_log.close()
-    enhanced_print(f"\n[INFO] Gateway configuration saved to: {log_file_path}")
-
-    return start_timestamps
+    return deposit_cutoff, withdrawal_cutoff
 
 # Select website configuration
 config = select_website()
 enhanced_print(f"Selected website: {config['name']}")
 
-# Get start timestamp configuration based on balance
-start_timestamps = get_start_by_balance()
+# Get transaction ID filter configuration
+deposit_cutoff, withdrawal_cutoff = get_start_by_transaction_id()
 
 # ======== Setup the driver with error handling ========
 try:
@@ -787,82 +560,31 @@ wait_for_overlay_to_disappear(driver, max_wait=5)
 enhanced_print("Bank Transactions page loaded")
 
 
-def remove_bom(line):
-    BOM = '\ufeff'
-    if line.startswith(BOM):
-        return line.lstrip(BOM)
-    return line
-
-def get_current_balance():
-    """Get current balance from the web interface"""
-    try:
-        # Try multiple selectors for balance display
-        balance_selectors = [
-            "#bankBalanceDisplay",
-            ".bank-balance",
-            "[data-testid='balance']",
-            ".balance-amount",
-            "span:contains('NPR')",
-            "div:contains('Balance')"
-        ]
-
-        for selector in balance_selectors:
-            try:
-                if selector.startswith("#") or selector.startswith(".") or selector.startswith("["):
-                    balance_element = driver.find_element(By.CSS_SELECTOR, selector)
-                else:
-                    # For complex selectors, use XPath
-                    balance_element = driver.find_element(By.XPATH, f"//*[contains(text(), 'NPR') or contains(text(), 'Balance')]")
-
-                balance_text = balance_element.text.strip()
-                enhanced_print(f"[DEBUG] Found balance text: '{balance_text}' with selector: {selector}")
-
-                # Extract numeric value from text like "NPR 1242.06" or "Balance: 1242.06"
-                import re
-                balance_match = re.search(r'[\d,]+\.?\d*', balance_text.replace(",", ""))
-                if balance_match:
-                    balance_value = float(balance_match.group())
-                    enhanced_print(f"[INFO] Current Balance: {balance_value}")
-                    return balance_value
-
-            except Exception as e:
-                continue
-
-        # If no specific balance element found, try to get from any visible text
-        try:
-            page_source = driver.page_source
-            balance_matches = re.findall(r'NPR\s*([\d,]+\.?\d*)', page_source)
-            if balance_matches:
-                balance_value = float(balance_matches[0].replace(",", ""))
-                enhanced_print(f"[INFO] Balance from page source: {balance_value}")
-                return balance_value
-        except:
-            pass
-
-        enhanced_print("[WARNING] Could not find balance on page")
-        return None
-
-    except Exception as e:
-        enhanced_print(f"[ERROR] Could not fetch balance: {e}")
-        return None
-
-
-
-
 
 def gateway_setup_movement(gateway_name):
     enhanced_print(f"\033[93m[Gateway Setup] Executing setup for {gateway_name}\033[0m")
 
     gateway_map = {
-        "Esewa_bank_Shankar Yadav_20250612": "ESEWA SHANKAR YADAV",
-        "Laxmi_bank_Baijianath_20250407": "LAXMI BANK BAIJANATH YADAV",
-        "Laxmi_bank_Subash Sunar_20250806": "LAXMI BANK SUBASH SUNAR",
-        "Laxmi_bank_Pawan kumar khatri_20250921": "LAXMI BANK PAWAN KUMAR KHATRI",
-        "Kumari Bank BAIJANATH YADAV_20251019": "Kumari Bank BIJAY YADAV_20251019",
-        "LNWPAY": "LNWPAY",
-        "CITIZENS_BANK_PRABESH KUMAR YADAV_20251204": "CITIZENS BANK PRABESH KUMAR YADAV 20251204",
-        "NIC_BANK_DEEPAK K.C._20251202": "NIC ASIA BANK DEEPAK K.C.",
-        "MUKTINATH BANK_KUMAR YADAV_20251121": "MUKTINATH BANK_20251121"
+        "XYPAY": "XYPAY",
+        "XCPAY": "XCPAY",
+        "SKPAY": "SKPAY",
+        "YTPAY": "YTPAY",
+        "OSPAY": "OSPAY",
+        "SIMPLYPAY": "SIMPLYPAY",
+        "VADERPAY": "VADERPAY",
+        "PASSPAY": "PASSPAY",
+        "MULTIPAY": "MULTIPAY",
+        "U9PAY": "U9PAY",
+        "BOMBAYPAY": "BOMBAYPAY",
+        "EPAY": "EPAY",
+        "MOHAMMED AMEER ABBAS": "Karnataka Bank 2",
+        "Test": "Test",
+        "Test2" : "Test2",
+        "BOPAY": "BOPAY",
+        "CPUPAY": "CPUPAY",
+        "MAINPAY": "MAINPAY",
+        "TOPPAY": "TOPPAY",
+        "crypto": "TMX CRYPTO"
     }
 
     if gateway_name in gateway_map:
@@ -997,39 +719,35 @@ def enter_gateway_name(gateway_text):
 
 
 def add_transaction_details(record):
-
-    """Fill Order ID, Phone Number, and Amount into form."""
+    """Fill Order ID, Phone Number, Amount, Date, and Time into form."""
     enhanced_print(f"Processing Record: Order ID \033[92m{record.get('Order ID', 'Unknown')}\033[0m")
     enhanced_print(f"   Amount: {record.get('Amount', 'Unknown')}")
     enhanced_print(f"   Phone: {record.get('Phone Number', 'Unknown')}")
+    enhanced_print(f"   Type: {record.get('transaction_type', 'DEPOSIT')}")
 
     # Wait briefly for page load
     time.sleep(2.5)
-    
-    # Find Add button quickly
+
+    # Find Add button
     wait = WebDriverWait(driver, 20)
     add_button = wait.until(EC.element_to_be_clickable((
         By.XPATH, "//button[contains(text(), 'Add New Bank Transaction')]"
     )))
-    
-    # Single click on Add Transaction button
-    try:
-        # Check if overlay is blocking and wait for it to disappear
-        wait_for_overlay_to_disappear(driver, max_wait=2)
 
+    # Click Add Transaction button with overlay handling
+    try:
+        wait_for_overlay_to_disappear(driver, max_wait=2)
         add_button.click()
         enhanced_print("[INFO] Add Transaction button clicked")
-
     except Exception as e:
         enhanced_print(f"[WARNING] Click failed: {e}")
-        # Try JavaScript click as fallback
         try:
             driver.execute_script("arguments[0].click();", add_button)
             enhanced_print("[INFO] Used JavaScript click as fallback")
         except Exception as js_e:
             enhanced_print(f"[ERROR] JavaScript click also failed: {js_e}")
 
-    # === Wait for the window UI to appear ===
+    # Wait for modal to appear
     WebDriverWait(driver, 20, poll_frequency=0.2).until(
         EC.presence_of_element_located((
             By.CSS_SELECTOR, ".flex.justify-between.px-4.py-3.rounded-t-lg.bg-slate-200.dark\\:bg-navy-800.sm\\:px-5"
@@ -1037,361 +755,60 @@ def add_transaction_details(record):
     )
     enhanced_print("[INFO] Target Window element appeared — proceeding...")
 
-    # Check transaction type and execute category/subcategory selection only for ADJUSTMENTADD
-    transaction_type = record.get("Transaction Type", "")
-    
-    if transaction_type.upper() in ("ADJUSTMENTADD", "PENDING_DEPOSIT", "CASH_IN"):
-        enhanced_print(f"[INFO] {transaction_type} detected - executing category and subcategory selection")
-        
-        # ======================= Click on 'category' combobox and select 'Advance' =======================
-
-        try:
-            # 1. Wait for and click the GAME div
-            game_div = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.item[data-value="GAME"]'))
-            )
-            game_div.click()
-            enhanced_print("Clicked the GAME element.")
-
-            # 2. Track and work with the GAME div element
-            # enhanced_print(f"[DEBUG] GAME div element: {game_div}")
-            # enhanced_print(f"[DEBUG] GAME div data-value: {game_div.get_attribute('data-value')}")
-            # enhanced_print(f"[DEBUG] GAME div class: {game_div.get_attribute('class')}")
-            # enhanced_print(f"[DEBUG] GAME div text: {game_div.text}")
-            
-            # # 3. Try to input 'Advance' directly on the GAME element
-            # enhanced_print("[DEBUG] Attempting to input 'Advance' on GAME div...")
-            # try:
-            #     game_div.clear()
-            #     game_div.send_keys("Advance")
-            #     time.sleep(.5)
-            #     game_div.send_keys(Keys.ENTER)
-            #     enhanced_print("[DEBUG] Input set to 'Advance' on GAME div.")
-            #     time.sleep(.5)
-            # except Exception as e:
-            #     enhanced_print(f"[DEBUG] Failed to input on GAME div: {e}")
-            #     # Try using JavaScript to set value
-            #     enhanced_print("[DEBUG] Trying JavaScript approach...")
-            #     driver.execute_script("""
-            #         arguments[0].textContent = 'Advance';
-            #         arguments[0].dispatchEvent(new Event('input', { bubbles: true }));
-            #     """, game_div)
-            #     enhanced_print("[DEBUG] Set 'Advance' using JavaScript.")
-
-
-            # ============= Select 'Advance' on dropdown list ============= 
-            enhanced_print("[DEBUG] Looking for dropdown and Advance option...")
-            try:
-                dropdown = WebDriverWait(driver, 10).until(
-                    EC.visibility_of_element_located((By.XPATH, "//div[@class='ts-dropdown single' and contains(@style,'display: block')]"))
-                )
-                enhanced_print(f"[DEBUG] Found dropdown: {dropdown}")
-                enhanced_print(f"[DEBUG] Dropdown style: {dropdown.get_attribute('style')}")
-                
-                advance_option = dropdown.find_element(By.XPATH, ".//div[@data-value='Advance']")
-                enhanced_print(f"[DEBUG] Found Advance option: {advance_option}")
-                enhanced_print(f"[DEBUG] Advance option text: {advance_option.text}")
-                enhanced_print(f"[DEBUG] Advance option data-value: {advance_option.get_attribute('data-value')}")
-                
-                time.sleep(0.5)
-                advance_option.click()
-                enhanced_print("[DEBUG] Successfully clicked Advance option")
-            except Exception as dropdown_error:
-                enhanced_print(f"[DEBUG] Failed to find/click Advance option: {dropdown_error}")
-                # Try alternative approach
-                enhanced_print("[DEBUG] Trying alternative selector...")
-                try:
-                    advance_alt = WebDriverWait(driver, 5).until(
-                        EC.element_to_be_clickable((By.XPATH, "//div[@data-value='Advance']"))
-                    )
-                    time.sleep(0.5)
-                    advance_alt.click()
-                    enhanced_print("[DEBUG] Successfully clicked Advance with alternative selector")
-                except Exception as alt_error:
-                    enhanced_print(f"[DEBUG] Alternative approach also failed: {alt_error}")
-                    raise dropdown_error
-
-        except Exception as e:
-            enhanced_print("Error:", e)
-
-        time.sleep(.5)
-        # ======================= Click on 'Sub Category' combobox and select 'Internal Transfer' =======================
-
-        try:
-            click_external_transfer = lambda driver: WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//div[@data-value='3' and text()='External Transfer']"))
-            ).click()
-
-            # usage
-            time.sleep(.5)
-            click_external_transfer(driver)
-
-        except Exception as e:
-            enhanced_print("Error:", e)
-
-
-        try:
-            # Inline function to wait for dropdown and click "Internal Transfer"
-            click_internal_transfer = lambda driver: WebDriverWait(driver, 10).until(
-                EC.visibility_of_element_located((By.XPATH, "//div[@class='ts-dropdown single' and contains(@style,'display: block')]"))
-            ).find_element(By.XPATH, ".//div[@data-value='4' and text()='Internal Transfer']").click()
-
-            # usage
-            time.sleep(.5)
-            click_internal_transfer(driver)
-
-        except Exception as e:
-            enhanced_print("Error:", e)
-
-        time.sleep(.5)
-    else:
-        enhanced_print(f"[INFO] Transaction type '{transaction_type}' - skipping ADJUSTMENTADD/PENDING_DEPOSIT/CASH_IN category/subcategory selection")
-
-    # Check transaction type and execute category/subcategory selection only for ADJUSTMENTDEDUCT
-    if transaction_type.upper() in ("ADJUSTMENTDEDUCT", "CASH_OUT"):
-        enhanced_print("[INFO] ADJUSTMENTDEDUCT detected - executing category selection")
-        
-        # ======================= Click on 'category' combobox and select 'Advance' =======================
-
+    # Click 'out' radio button for withdrawal transactions
+    transaction_type = record.get("transaction_type", "DEPOSIT")
+    if transaction_type == "WITHDRAWAL":
+        enhanced_print("[INFO] WITHDRAWAL detected - clicking 'out' radio button")
         wait = WebDriverWait(driver, 15)
         out_radio = wait.until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[type="radio"][value="out"]'))
         )
-        
         smart_click(out_radio)
-        enhanced_print("[INFO] Successfully clicked 'out' radio button for withdrawal transaction")
-
-        try:
-            # 1. Wait for and click the GAME div
-            game_div = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.item[data-value="GAME"]'))
-            )
-            game_div.click()
-            enhanced_print("Clicked the GAME element.")
-
-            enhanced_print("[DEBUG] Looking for dropdown and Advance option...")
-            try:
-                dropdown = WebDriverWait(driver, 10).until(
-                    EC.visibility_of_element_located((By.XPATH, "//div[@class='ts-dropdown single' and contains(@style,'display: block')]"))
-                )
-                enhanced_print(f"[DEBUG] Found dropdown: {dropdown}")
-                enhanced_print(f"[DEBUG] Dropdown style: {dropdown.get_attribute('style')}")
-                
-                advance_option = dropdown.find_element(By.XPATH, ".//div[@data-value='Advance']")
-                enhanced_print(f"[DEBUG] Found Advance option: {advance_option}")
-                enhanced_print(f"[DEBUG] Advance option text: {advance_option.text}")
-                enhanced_print(f"[DEBUG] Advance option data-value: {advance_option.get_attribute('data-value')}")
-                
-                advance_option.click()
-                enhanced_print("[DEBUG] Successfully clicked Advance option")
-            except Exception as dropdown_error:
-                enhanced_print(f"[DEBUG] Failed to find/click Advance option: {dropdown_error}")
-                # Try alternative approach
-                enhanced_print("[DEBUG] Trying alternative selector...")
-                try:
-                    advance_alt = WebDriverWait(driver, 5).until(
-                        EC.element_to_be_clickable((By.XPATH, "//div[@data-value='Advance']"))
-                    )
-                    advance_alt.click()
-                    enhanced_print("[DEBUG] Successfully clicked Advance with alternative selector")
-                except Exception as alt_error:
-                    enhanced_print(f"[DEBUG] Alternative approach also failed: {alt_error}")
-                    raise dropdown_error
-
-
-        except Exception as e:
-            enhanced_print("Error:", e)
-
-        time.sleep(2)
-
-
-        # try:
-        #     # Wait until the input element is visible
-        #     input_element = WebDriverWait(driver, 10).until(
-        #         EC.visibility_of_element_located(
-        #             (By.CSS_SELECTOR, 'input#tomselect-4-ts-control[role="combobox"]')
-        #         )
-        #     )
-        #     
-        #     # Send multiple BACKSPACE keys to "clear"
-        #     for _ in range(30):  # adjust 30 based on max expected length
-        #         input_element.send_keys(Keys.BACKSPACE)
-        #         time.sleep(0.05)  # small delay to ensure JS catches it
-
-        #     time.sleep(0.5)
-        #     input_element.send_keys("External Transfer")
-        #     time.sleep(1)
-        #     input_element.send_keys(Keys.ENTER)
-        #     time.sleep(1)
-        #     enhanced_print("Text sent successfully!")
-
-        # except Exception as e:
-        #     enhanced_print(f"Failed to send keys: {e}")
-
-        # time.sleep(.5)
-
-    else:
-        enhanced_print(f"[INFO] Transaction type '{transaction_type}' - skipping ADJUSTMENTDEDUCT/CASH_OUT category selection")
-
-    # Click 'out' radio button only for withdrawal transactions
-    # enhanced_print(f"[DEBUG] Record transaction type: '{transaction_type}' (upper: '{transaction_type.upper()}')")
-    # enhanced_print(f"[DEBUG] Is withdrawal check: {transaction_type.upper() == 'WITHDRAWAL'}")
-    
-    if transaction_type.upper() in ("WITHDRAWAL", "MANUAL_WITHDRAWAL", "ADJUSTMENTDEDUCT", "CASH_OUT"):
-        enhanced_print(f"[INFO] {transaction_type} detected - clicking 'out' radio button")
-        wait = WebDriverWait(driver, 15)
-        out_radio = wait.until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[type="radio"][value="out"]'))
-        )
-        
-        smart_click(out_radio)
-        enhanced_print(f"[INFO] Successfully clicked 'out' radio button for {transaction_type} transaction")
-    else:
-        enhanced_print(f"[INFO] Not a withdrawal type (type: '{transaction_type}') - skipping 'out' radio button")
+        enhanced_print("[INFO] Successfully clicked 'out' radio button")
 
     # ===== Order ID =====
     order_id_input = WebDriverWait(driver, 20).until(
         EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Bank Reference']"))
     )
-
-    # Force scroll into view before clear and type
     driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", order_id_input)
     time.sleep(0.3)
-
     order_id_input.clear()
     order_id_input.send_keys(record["Order ID"])
     enhanced_print(f"[INFO] Order ID entered: {record['Order ID']}")
 
-
-    # ===== Phone Number ===== (Only for DEPOSIT, PENDING_DEPOSIT, MANUAL_DEPOSIT, WITHDRAWAL, MANUAL_WITHDRAWAL)
-
-    if transaction_type.upper() in ("DEPOSIT", "PENDING_DEPOSIT", "MANUAL_DEPOSIT", "WITHDRAWAL", "MANUAL_WITHDRAWAL"):
-        enhanced_print(f"[INFO] {transaction_type} transaction - filling phone number field")
-        
-        phone_number_input = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Player ID']"))
-        )
-        
-        # Multiple scrolling approaches to ensure element is interactable
-        try:
-            # Approach 1: Scroll to top first
-            driver.execute_script("window.scrollTo(0, 0);")
-            time.sleep(0.5)
-            
-            # Approach 2: Scroll element into view
-            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", phone_number_input)
-            time.sleep(0.5)
-            
-            # Approach 3: Additional scrolling to ensure visibility
-            driver.execute_script("""
-                arguments[0].focus();
-                arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});
-                window.scrollBy(0, -100);
-            """, phone_number_input)
-            time.sleep(1)
-            
-            # Try to clear the field
-            phone_number_input.clear()
-            enhanced_print("[DEBUG] Phone number input cleared successfully")
-            
-        except Exception as clear_error:
-            enhanced_print(f"[DEBUG] Clear failed: {clear_error}, trying JavaScript approach...")
-            # JavaScript fallback for clearing
-            driver.execute_script("arguments[0].value = '';", phone_number_input)
-            enhanced_print("[DEBUG] Phone number input cleared with JavaScript")
-        
-        # Enter the phone number
-        try:
-            phone_number_input.send_keys(record["Phone Number"])
-            enhanced_print(f"[INFO] Phone Number entered: {record['Phone Number']}")
-        except Exception as send_error:
-            enhanced_print(f"[DEBUG] Send keys failed: {send_error}, trying JavaScript...")
-            driver.execute_script("arguments[0].value = arguments[1];", phone_number_input, record["Phone Number"])
-            enhanced_print(f"[INFO] Phone Number entered with JavaScript: {record['Phone Number']}")
-    else:
-        enhanced_print(f"[INFO] {transaction_type} transaction - skipping phone number field")
-
-    # ===== Remark ===== (Only for CASH_IN, CASH_OUT, MANUAL_DEPOSIT, PENDING_DEPOSIT)
-
-    if transaction_type.upper() in ("CASH_IN", "CASH_OUT", "MANUAL_DEPOSIT", "PENDING_DEPOSIT", "ADJUSTMENTADD", "ADJUSTMENTDEDUCT"):
-        enhanced_print(f"[INFO] {transaction_type} transaction - filling remark field")
-
-        remark_input = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.XPATH, "//textarea[@placeholder='Remarks']"))
-        )
-
-        # Multiple scrolling approaches to ensure element is interactable
-        try:
-            # Approach 1: Scroll to top first
-            driver.execute_script("window.scrollTo(0, 0);")
-            time.sleep(0.5)
-
-            # Approach 2: Scroll element into view
-            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", remark_input)
-            time.sleep(0.5)
-
-            # Approach 3: Additional scrolling to ensure visibility
-            driver.execute_script("""
-                arguments[0].focus();
-                arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});
-                window.scrollBy(0, -100);
-            """, remark_input)
-            time.sleep(1)
-
-            # Try to clear the field
-            remark_input.clear()
-            enhanced_print("[DEBUG] Remarks input cleared successfully")
-
-        except Exception as clear_error:
-            enhanced_print(f"[DEBUG] Clear failed: {clear_error}, trying JavaScript approach...")
-            # JavaScript fallback for clearing
-            driver.execute_script("arguments[0].value = '';", remark_input)
-            enhanced_print("[DEBUG] Remarks input cleared with JavaScript")
-
-        # Enter the transaction type as remark
-        try:
-            remark_input.send_keys(record["Transaction Type"])
-            enhanced_print(f"[INFO] Transaction Type entered in remarks: {record['Transaction Type']}")
-        except Exception as send_error:
-            enhanced_print(f"[DEBUG] Send keys failed: {send_error}, trying JavaScript...")
-            driver.execute_script("arguments[0].value = arguments[1];", remark_input, record["Transaction Type"])
-            enhanced_print(f"[INFO] Transaction Type entered in remarks with JavaScript: {record['Transaction Type']}")
-    else:
-        enhanced_print(f"[INFO] {transaction_type} transaction - skipping remark field")
+    # ===== Phone Number =====
+    phone_number_input = WebDriverWait(driver, 20).until(
+        EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Player ID']"))
+    )
+    try:
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", phone_number_input)
+        time.sleep(0.3)
+        phone_number_input.clear()
+    except Exception as clear_error:
+        enhanced_print(f"[DEBUG] Clear failed: {clear_error}, trying JavaScript approach...")
+        driver.execute_script("arguments[0].value = '';", phone_number_input)
+    try:
+        phone_number_input.send_keys(record["Phone Number"])
+        enhanced_print(f"[INFO] Phone Number entered: {record['Phone Number']}")
+    except Exception as send_error:
+        enhanced_print(f"[DEBUG] Send keys failed: {send_error}, trying JavaScript...")
+        driver.execute_script("arguments[0].value = arguments[1];", phone_number_input, record["Phone Number"])
+        enhanced_print(f"[INFO] Phone Number entered with JavaScript: {record['Phone Number']}")
 
     # ===== Amount =====
-
     amount_input = WebDriverWait(driver, 20).until(
         EC.presence_of_element_located((By.XPATH, "//input[@placeholder='amount']"))
     )
     amount_input.clear()
     amount_input.send_keys(str(record["Amount"]).replace(",", ""))
-    enhanced_print(f"[INFO] Order ID entered: {record['Amount']}")
-
-
-
-    # ===== Bank Charges =====
-    if record["Bank Tax"] != "-":
-        bank_charge_input = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Bank Charge']"))
-        )
-        bank_charge_input.clear()
-        bank_charge_input.send_keys(str(record["Bank Tax"]).replace(",", ""))
-        enhanced_print(f"[INFO] Bank Charge entered: {record['Bank Tax']}")
-    else:
-        enhanced_print("[INFO] Skipped Bank Charge input (value was '-')")
-
-
+    enhanced_print(f"[INFO] Amount entered: {record['Amount']}")
 
     # ===== Datepicker =====
-
     calendar_input = WebDriverWait(driver, 20).until(
         EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Choose datetime...']"))
     )
-    
-    # Use smart click with calendar verification
     smart_click(calendar_input, verify_callback=lambda: verify_calendar_opened(driver))
-    enhanced_print(f"[INFO] Calendar input clicked...")
+    enhanced_print("[INFO] Calendar input clicked...")
 
     calendar_popup = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CLASS_NAME, "flatpickr-calendar"))
@@ -1399,108 +816,82 @@ def add_transaction_details(record):
 
     if "open" in calendar_popup.get_attribute("class"):
         enhanced_print("[INFO] Calendar popup is OPEN")
-
-        # Use user-selected OS date format
         target_date = format_date_for_calendar(record["Datetime"], os_type)
         all_days = driver.find_elements(By.CSS_SELECTOR, ".flatpickr-day")
-
         for day in all_days:
             if day.get_attribute("aria-label") == target_date:
                 driver.execute_script("arguments[0].scrollIntoView(true);", day)
-                # Use smart click for date selection
                 smart_click(day)
                 enhanced_print(f"[INFO] Clicked date: {target_date}")
                 break
         else:
             enhanced_print(f"[ERROR] Date '{target_date}' not found in picker.")
-
     else:
         enhanced_print("[WARN] Calendar popup did NOT open")
 
-
     # ===== Hour =====
     wait = WebDriverWait(driver, 40)
-    merchant_input = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input.flatpickr-hour")))
-    merchant_input.clear()
-    merchant_input.send_keys(record["Hour"])
-
-    time.sleep(.5)
-
+    hour_input = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input.flatpickr-hour")))
+    hour_input.clear()
+    hour_input.send_keys(record["Hour"])
+    time.sleep(0.5)
 
     # ===== Minutes =====
     wait = WebDriverWait(driver, 40)
-    merchant_input = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input.flatpickr-minute")))
-    merchant_input.clear()
-    merchant_input.send_keys(record["Minute"])
+    minute_input = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input.flatpickr-minute")))
+    minute_input.clear()
+    minute_input.send_keys(record["Minute"])
+    time.sleep(0.5)
 
-    time.sleep(.5)
-
-
-    # ===== Decide AM or PM from the record =====
-
+    # ===== AM/PM =====
     ampm_target = "AM" if int(record.get("Hour", 0)) < 12 else "PM"
     ampm_toggle = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CLASS_NAME, "flatpickr-am-pm"))
     )
-
-    # Check and click if needed
     current_ampm = ampm_toggle.text.strip().upper()
     if current_ampm != ampm_target:
-        # Use smart click for AM/PM toggle
         smart_click(ampm_toggle)
         enhanced_print(f"[INFO] AM/PM toggled to {ampm_target}")
     else:
         enhanced_print(f"[INFO] AM/PM already set to {ampm_target}")
 
     time.sleep(1)
-    
-    # Select Player ID field (only for transactions that have phone number field)
-    if transaction_type.upper() in ("DEPOSIT", "PENDING_DEPOSIT", "MANUAL_DEPOSIT", "WITHDRAWAL", "MANUAL_WITHDRAWAL"):
-        try:
-            player_id_input = WebDriverWait(driver, 20).until(
-                EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Player ID']"))
-            )
 
-            # Add scrolling for Player ID field as well
-            driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", player_id_input)
-            time.sleep(0.3)
-
-            player_id_input.click()
-            enhanced_print(f"[INFO] Player ID field clicked for {transaction_type}")
-        except Exception as player_click_error:
-            enhanced_print(f"[DEBUG] Player ID click failed: {player_click_error}, continuing...")
-    else:
-        enhanced_print(f"[INFO] {transaction_type} transaction - skipping Player ID field click")
+    # Click Player ID field to trigger validation
+    try:
+        player_id_input = WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Player ID']"))
+        )
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", player_id_input)
+        time.sleep(0.3)
+        player_id_input.click()
+        enhanced_print("[INFO] Player ID field clicked")
+    except Exception as player_click_error:
+        enhanced_print(f"[DEBUG] Player ID click failed: {player_click_error}, continuing...")
 
     time.sleep(1)
-    
-    # Confirm calendar selection by pressing Enter on the calendar input or body
+
+    # Confirm calendar selection
     try:
-        # First try to press Enter on the calendar input to confirm the datetime selection
         calendar_input = driver.find_element(By.XPATH, "//input[@placeholder='Choose datetime...']")
         calendar_input.send_keys(Keys.ENTER)
         enhanced_print("[INFO] Calendar selection confirmed via Enter on calendar input")
     except Exception as e:
         enhanced_print(f"[WARN] Could not confirm calendar via input: {e}")
-        # Fallback: press Enter on body to confirm calendar
         try:
             driver.find_element(By.TAG_NAME, "body").send_keys(Keys.ENTER)
             enhanced_print("[INFO] Calendar selection confirmed via Enter on body")
         except Exception as e2:
             enhanced_print(f"[WARN] Could not confirm calendar: {e2}")
-    
+
     time.sleep(0.5)
-    
-    # --- Usage flow after form submission ---
 
     # Check for transaction successful toast first
     if check_transaction_complete_toast(driver):
         enhanced_print("[INFO] Transaction added - form submitted")
-        # ✅ Proceed to next step without running Player ID toast check
     else:
         enhanced_print("[INFO] No transaction success toast detected - checking for Player ID errors")
 
-        # Now check for player ID toast
         if check_player_id_toast(driver):
             enhanced_print("\033[91m[WARN]\033[0m Player ID field validation failed - form not submitted")
 
@@ -1514,43 +905,27 @@ def add_transaction_details(record):
                 except Exception as e:
                     enhanced_print(f"[ERROR] Could not send ENTER key: {e}")
 
-            # After 5 attempts, check again if Player ID toast still appears
             time.sleep(2)
             enhanced_print("[INFO] Checking if Player ID toast still appears after 5 ENTER attempts...")
 
             if check_player_id_toast(driver, timeout=3):
-                enhanced_print("\033[91m[WARN]\033[0m Player ID toast still appears after 5 attempts - replacing player ID with custom text")
-
+                enhanced_print("\033[91m[WARN]\033[0m Player ID toast still appears - replacing player ID with custom text")
                 try:
-                    # Find the Player ID input field
                     player_id_input = WebDriverWait(driver, 10).until(
                         EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Player ID']"))
                     )
-
-                    # Scroll into view
                     driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", player_id_input)
                     time.sleep(0.5)
-
-                    # Clear the field
                     player_id_input.clear()
                     time.sleep(0.3)
-
-                    # ========== CUSTOMIZE THIS PART ==========
-                    # Replace "YOUR_CUSTOM_TEXT_HERE" with your specific text
                     custom_player_id = "not_found"
-                    # =========================================
-
-                    # Enter the custom text
                     player_id_input.send_keys(custom_player_id)
                     enhanced_print(f"[INFO] Player ID replaced with custom text: {custom_player_id}")
                     time.sleep(1)
-
-                    # Try submitting again by pressing Enter
                     body = driver.find_element(By.TAG_NAME, "body")
                     body.send_keys(Keys.ENTER)
                     enhanced_print("[INFO] Form re-submitted after replacing Player ID")
                     time.sleep(2)
-
                 except Exception as replace_error:
                     enhanced_print(f"[ERROR] Could not replace Player ID: {replace_error}")
             else:
@@ -1558,7 +933,7 @@ def add_transaction_details(record):
         else:
             enhanced_print("[INFO] No player ID toast detected - form submission successful")
 
-    time.sleep(.5)
+    time.sleep(0.5)
 
 
 
@@ -1569,7 +944,7 @@ def add_transaction_details(record):
 
 
 
-def parse_and_execute(filename, start_timestamps=None):
+def parse_and_execute(filename, deposit_cutoff=None, withdrawal_cutoff=None):
     with open(filename, 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
@@ -1578,15 +953,19 @@ def parse_and_execute(filename, start_timestamps=None):
     performed_gateways = set()
     current_transaction_type = "DEPOSIT"  # Default to DEPOSIT
 
-    # Balance tracking for each gateway
-    gateway_balances = {}  # Will store latest balance for each gateway
-
     supported_gateways = {
-        "Laxmi_bank_Baijianath_20250407", "Esewa_bank_Shankar Yadav_20250612", "Laxmi_bank_Subash Sunar_20250806", "Laxmi_bank_Pawan kumar khatri_20250921", "Kumari Bank BAIJANATH YADAV_20251019", "LNWPAY", "CITIZENS_BANK_PRABESH KUMAR YADAV_20251204", "NIC_BANK_DEEPAK K.C._20251202", "MUKTINATH BANK_KUMAR YADAV_20251121"
+        "XYPAY", "SKPAY", "YTPAY", "OSPAY", "SIMPLYPAY", "VADERPAY",
+        "PASSPAY", "MULTIPAY", "U9PAY", "BOMBAYPAY", "EPAY",
+        "MOHAMMED AMEER ABBAS", "Test", "Test2", "XCPAY", "BOPAY", "CPUPAY",
+        "MAINPAY", "TOPPAY", "crypto"
     }
 
+    # Track last processed Order IDs
+    last_deposit_id = None
+    last_withdrawal_id = None
+
     # Temporary variables for one record
-    order_id = phone = amount = time_str = transaction_type = bank_tax = None
+    order_id = phone = amount = time_str = None
     dt = hour_str = minute_str = None
 
     for raw_line in lines:
@@ -1596,19 +975,19 @@ def parse_and_execute(filename, start_timestamps=None):
             continue
 
         # Detect WITHDRAWALS section banner
-        if "WITHDRAWALS" in line and "=" in line:
+        if line == "WITHDRAWALS":
             current_transaction_type = "WITHDRAWAL"
-            enhanced_print(f"[INFO] Detected WITHDRAWALS section - switching to withdrawal mode: '{line}'")
+            enhanced_print(f"[INFO] Detected WITHDRAWALS section - switching to withdrawal mode")
             continue
 
-        # Detect DEPOSITS section banner  
-        if "DEPOSITS" in line and "=" in line:
+        # Detect DEPOSITS section banner
+        if line == "DEPOSITS":
             current_transaction_type = "DEPOSIT"
-            enhanced_print(f"[INFO] Detected DEPOSITS section - switching to deposit mode: '{line}'")
+            enhanced_print(f"[INFO] Detected DEPOSITS section - switching to deposit mode")
             continue
 
-        # Stop condition — flush records first
-        if line.startswith("==== GRAND TOTAL for All Gateways:"):
+        # Stop condition
+        if "GRAND TOTAL for All Gateways" in line:
             enhanced_print("[INFO] Reached GRAND TOTAL line. Stopping processing.")
             break
 
@@ -1616,8 +995,7 @@ def parse_and_execute(filename, start_timestamps=None):
         if line.startswith("====") and "Total Amount" in line:
             if current_records:
                 enhanced_print(f"[DEBUG] Flushing {len(current_records)} records under gateway '{current_gateway}'")
-                # Reverse the records to process from last to first (most recent to oldest)
-                for record in reversed(current_records):
+                for record in current_records:
                     add_transaction_details(record)
             current_records = []
 
@@ -1625,25 +1003,10 @@ def parse_and_execute(filename, start_timestamps=None):
             if match:
                 detected_gateway = match.group(1)
                 if detected_gateway in supported_gateways:
-                    # ✅ Capture balance before switching gateway (for previous gateway if any)
-                    previous_gateway = current_gateway
-                    if previous_gateway and previous_gateway in performed_gateways and previous_gateway != detected_gateway:
-                        # Get final balance for previous gateway before switching
-                        final_balance = get_current_balance()
-                        if final_balance is not None:
-                            gateway_balances[previous_gateway] = final_balance
-                            enhanced_print(f"[BALANCE] Final balance for previous gateway {previous_gateway}: {final_balance}")
-
                     current_gateway = detected_gateway
-                    gateway_setup_movement(current_gateway)
-                    performed_gateways.add(current_gateway)
-
-                    # Get initial balance for new gateway
-                    time.sleep(2)  # Wait for page to load after gateway switch
-                    initial_balance = get_current_balance()
-                    if initial_balance is not None:
-                        gateway_balances[current_gateway] = initial_balance
-                        enhanced_print(f"[BALANCE] Initial balance for {current_gateway}: {initial_balance}")
+                    if current_gateway not in performed_gateways:
+                        gateway_setup_movement(current_gateway)
+                        performed_gateways.add(current_gateway)
                 else:
                     enhanced_print(f"[WARNING] Unsupported gateway '{detected_gateway}', skipping records.")
                     current_gateway = None
@@ -1656,14 +1019,10 @@ def parse_and_execute(filename, start_timestamps=None):
         # Parse record fields
         if line.startswith("Order ID:"):
             order_id = line.split(":", 1)[1].strip()
-        elif line.startswith("Transaction Type:"):
-            transaction_type = line.split(":", 1)[1].strip()
         elif line.startswith("Phone Number:"):
             phone = line.split(":", 1)[1].strip()
         elif line.startswith("Amount:"):
             amount = line.split(":", 1)[1].strip()
-        elif line.startswith("Bank Charges:"):
-            bank_tax = line.split(":", 1)[1].strip()
         elif line.startswith("Time:"):
             time_str = line.split(":", 1)[1].strip()
             try:
@@ -1671,33 +1030,23 @@ def parse_and_execute(filename, start_timestamps=None):
                 hour_str = f"{dt.hour:02d}"
                 minute_str = f"{dt.minute:02d}"
 
-                # ✅ Only append once all fields are known (bank_tax can be None/missing)
-                if all([order_id, phone, amount, time_str, transaction_type]):
-                    # Check if we should skip this record based on start timestamp
+                if all([order_id, phone, amount, time_str]):
+                    # ID-based filtering
                     should_process = True
-                    if start_timestamps and current_gateway in start_timestamps:
-                        start_ts = start_timestamps[current_gateway]
+                    id_match = re.search(r'(\d+)$', order_id)
+                    id_num = int(id_match.group(1)) if id_match else 0
 
-                        if start_ts == 'SKIP':
-                            enhanced_print(f"[SKIP LOG] Gateway: {current_gateway} - Order ID: {order_id} - Type: {transaction_type} - Reason: Gateway set to SKIP")
+                    if current_transaction_type == "DEPOSIT" and deposit_cutoff is not None:
+                        if id_num <= deposit_cutoff:
+                            enhanced_print(f"[SKIP] Deposit {order_id} (ID {id_num} <= cutoff {deposit_cutoff})")
                             should_process = False
-                        elif start_ts:
-                            try:
-                                # Parse timestamps for comparison
-                                record_datetime = datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S")
-                                start_datetime = datetime.strptime(start_ts, "%Y-%m-%d %H:%M:%S")
-
-                                # Process only records AFTER the start timestamp
-                                if record_datetime <= start_datetime:
-                                    enhanced_print(f"[SKIP LOG] Gateway: {current_gateway} - Order ID: {order_id} - Type: {transaction_type} - Reason: Timestamp {time_str} is not after start timestamp {start_ts}")
-                                    should_process = False
-                                else:
-                                    enhanced_print(f"[PROCESS LOG] Gateway: {current_gateway} - Order ID: {order_id} - Type: {transaction_type} - Will process (Timestamp {time_str} is after {start_ts})")
-                            except ValueError as e:
-                                enhanced_print(f"[WARNING] Could not compare timestamp {time_str} with start timestamp {start_ts}: {e}")
+                    elif current_transaction_type == "WITHDRAWAL" and withdrawal_cutoff is not None:
+                        if id_num <= withdrawal_cutoff:
+                            enhanced_print(f"[SKIP] Withdrawal {order_id} (ID {id_num} <= cutoff {withdrawal_cutoff})")
+                            should_process = False
 
                     if should_process:
-                        enhanced_print(f"[DEBUG] Creating record with Transaction Type: {transaction_type}")
+                        enhanced_print(f"[PROCESS] {current_transaction_type} {order_id} (ID {id_num})")
                         current_records.append({
                             "Order ID": order_id,
                             "Phone Number": phone,
@@ -1706,60 +1055,28 @@ def parse_and_execute(filename, start_timestamps=None):
                             "Hour": hour_str,
                             "Minute": minute_str,
                             "Datetime": dt,
-                            "Transaction Type": transaction_type,
-                            "Bank Tax": bank_tax if bank_tax is not None else "-"
+                            "transaction_type": current_transaction_type
                         })
+                        if current_transaction_type == "DEPOSIT":
+                            last_deposit_id = order_id
+                        elif current_transaction_type == "WITHDRAWAL":
+                            last_withdrawal_id = order_id
 
                     # Reset vars for next record
-                    order_id = phone = amount = time_str = transaction_type = bank_tax = None
+                    order_id = phone = amount = time_str = None
                     dt = hour_str = minute_str = None
             except ValueError:
                 enhanced_print(f"[ERROR] Invalid datetime: {time_str}")
                 continue
 
-    # ✅ Final flush at EOF
+    # Final flush at EOF
     if current_records:
         enhanced_print(f"[DEBUG] Final flush: {len(current_records)} records under gateway '{current_gateway}'")
-        # Reverse the records to process from last to first (most recent to oldest)
-        for record in reversed(current_records):
+        for record in current_records:
             add_transaction_details(record)
 
-    # ✅ Capture final balance for the last gateway
-    if current_gateway and current_gateway in performed_gateways:
-        final_balance = get_current_balance()
-        if final_balance is not None:
-            gateway_balances[current_gateway] = final_balance
-            enhanced_print(f"[BALANCE] Final balance for last gateway {current_gateway}: {final_balance}")
+    return last_deposit_id, last_withdrawal_id
 
-    # ✅ Print gateway balance summary
-    print_gateway_balance_summary(gateway_balances)
-
-def print_gateway_balance_summary(gateway_balances):
-    """Print final balance summary for all processed gateways"""
-    if not gateway_balances:
-        enhanced_print("\n[INFO] No gateway balances to display")
-        return
-
-    enhanced_print("\n" + "\033[1;35m" + "="*80 + "\033[0m")
-    enhanced_print("\033[1;35m                        GATEWAY BALANCE SUMMARY\033[0m")
-    enhanced_print("\033[1;35m" + "="*80 + "\033[0m")
-
-    total_balance = 0
-    for gateway, balance in gateway_balances.items():
-        if balance is not None:
-            enhanced_print(f"🏦 {gateway}")
-            enhanced_print(f"   💰 Final Balance: \033[1;32mNPR {balance:.2f}\033[0m")
-            enhanced_print("-" * 60)
-            total_balance += balance
-        else:
-            enhanced_print(f"🏦 {gateway}")
-            enhanced_print(f"   ❌ Balance could not be retrieved")
-            enhanced_print("-" * 60)
-
-
-    enhanced_print("\033[1;35m" + "="*80 + "\033[0m")
-    enhanced_print("\033[1;35m                    END OF BALANCE SUMMARY\033[0m")
-    enhanced_print("\033[1;35m" + "="*80 + "\033[0m")
 
 # ===== Function call HERE =====
 # Get relative path for transaction file
@@ -1768,12 +1085,28 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 working_dir = os.path.dirname(os.path.dirname(script_dir))
 transaction_file_path = os.path.join(working_dir, "result", "selenium-transaction_history.txt")
 
-enhanced_print("📋 Starting transaction processing from file...")
-parse_and_execute(transaction_file_path, start_timestamps)
+enhanced_print("Starting transaction processing from file...")
+last_deposit_id, last_withdrawal_id = parse_and_execute(transaction_file_path, deposit_cutoff, withdrawal_cutoff)
 enhanced_print("All transactions processed successfully!")
 enhanced_print("Automation completed. Closing browser...")
 time.sleep(2)
 driver.quit()
+
+# Print and save last processed transaction IDs
+last_ids_path = os.path.join(working_dir, "result", "last_transaction_ids.txt")
+summary = (
+    "="*60 + "\n"
+    "       LAST PROCESSED TRANSACTION IDs\n"
+    + "="*60 + "\n"
+    + f"  Last Deposit ID:    {last_deposit_id if last_deposit_id else '(none processed)'}\n"
+    + f"  Last Withdrawal ID: {last_withdrawal_id if last_withdrawal_id else '(none processed)'}\n"
+    + "="*60 + "\n"
+    + "  Use these IDs as cutoff next time you run the script.\n"
+    + "="*60
+)
+print("\n" + summary + "\n")
+with open(last_ids_path, "w", encoding="utf-8") as f:
+    f.write(summary + "\n")
 
 # Cleanup
 try:

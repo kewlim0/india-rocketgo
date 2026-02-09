@@ -90,15 +90,15 @@ options = Options()
 # ======== Website Configuration ========
 website_configs = {
     "1": {
-        "name": "NepalWin",
-        "merchant_code": "nepalwin",
-        "username": "kewlim888_nepalwin",
-        "password": "aaaa1111"
+        "name": "luckytaj.com",
+        "merchant_code": "luckytaj",
+        "username": "Admin_Json",
+        "password": "json8888"
     },
     "2": {
-        "name": "95np",
-        "merchant_code": "95np",
-        "username": "alex_95np",
+        "name": "1taj.com",
+        "merchant_code": "1taj",
+        "username": "alex_1taj",
         "password": "asdf8888"
     }
 }
@@ -207,7 +207,7 @@ def load_phone_records_from_file():
     working_dir = os.path.dirname(os.path.dirname(script_dir))
     filename = os.path.join(working_dir, "result", "selenium-phone-number.txt")
 
-    pattern = re.compile(r"#\d+\s+-\s+Full Name:\s+(.*?),\s+Login ID:\s+(.*?),\s+Phone:\s+(\d+),\s+Email:\s+(.*?),\s+Registration:\s+(.*)", re.IGNORECASE)
+    pattern = re.compile(r"#\d+\s+-\s+Phone:\s+(.*?),\s+Player ID:\s+(.*?),\s+Email:\s+(.*?),\s+Affiliate:\s+(.*)", re.IGNORECASE)
     records = []
 
     with open(filename, 'r', encoding='utf-8') as file:
@@ -216,13 +216,12 @@ def load_phone_records_from_file():
     for line in lines:
         match = pattern.match(line)
         if match:
-            full_name, login_id, phone, email, registration = (x.strip() for x in match.groups())
+            phone, player_id, email, affiliate = (x.strip() for x in match.groups())
             records.append({
-                "Full Name": full_name,
-                "Login ID": login_id,
                 "Phone Number": phone,
+                "Player ID": player_id,
                 "Email": email,
-                "Registration Date": registration
+                "Affiliate Code": affiliate,
             })
         else:
             print(f"⚠️ Skipping malformed line: {line}")
@@ -258,18 +257,21 @@ def add_player_details(record):
         EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Player ID']"))
     )
     player_id_input.clear()
-    player_id_input.send_keys(record["Login ID"])
-    print(f"[INFO] Player ID entered: {record['Login ID']}")
+    player_id_input.send_keys(record["Player ID"])
+    print(f"[INFO] Player ID entered: {record['Player ID']}")
 
 
     # ===== Phone Number =====
 
-    number_id_input = WebDriverWait(driver, 20).until(
-        EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Phone Number']"))
-    )
-    number_id_input.clear()
-    number_id_input.send_keys(record["Phone Number"])
-    print(f"[INFO] Player ID entered: {record['Phone Number']}")
+    if record["Phone Number"] != "-":
+        number_id_input = WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Phone Number']"))
+        )
+        number_id_input.clear()
+        number_id_input.send_keys(record["Phone Number"])
+        print(f"[INFO] Phone Number entered: {record['Phone Number']}")
+    else:
+        print("[INFO] Skipped Phone Number input (value was '-')")
 
 
     # ===== Email =====
@@ -284,28 +286,14 @@ def add_player_details(record):
         print("[INFO] Skipped Email input (value was '-')")
 
 
-    # ===== Remarks (Full Name) =====
-    print(f"[DEBUG] Full Name from record: '{record['Full Name']}'")
-    
-    number_id_input = WebDriverWait(driver, 20).until(
-        EC.presence_of_element_located((By.XPATH, "//textarea[@placeholder='Remarks']"))
-    )
-    number_id_input.clear()
-    number_id_input.send_keys(record["Full Name"])
-    
-    # Verify what was actually entered
-    entered_value = number_id_input.get_attribute("value")
-    print(f"[DEBUG] Value entered in Remarks field: '{entered_value}'")
-    print(f"[INFO] Full Name entered: {record['Full Name']}")
-
-
-
     time.sleep(1)
-    
-    # Submit the form using Enter key
+
+    # ===== Affiliate Code + Submit =====
     try:
-        # Find the last input field (affiliate ID) and press Enter
         last_input = driver.find_element(By.XPATH, "//input[@placeholder='Enter affiliate ID']")
+        last_input.clear()
+        last_input.send_keys(record["Affiliate Code"])
+        print(f"[INFO] Affiliate Code entered: {record['Affiliate Code']}")
         last_input.send_keys(Keys.ENTER)
         print("[INFO] Form submitted via Enter key")
     except Exception as e:

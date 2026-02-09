@@ -2,1086 +2,1173 @@
                               DEPOSITS
 ================================================================================
 
-==== SKPAY (75 records) | Total Amount: Rs 52,000.00 | Total Fee: Rs 2496.00 ====
+==== OSPAY (9 records) | Total Amount: Rs 7,500.00 | Total Fee: Rs 337.50 ====
 
 Record #1
-Order ID: LTJPD164418
-Phone Number: 918930165143
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 20:14:33
-
-Record #2
-Order ID: LTJPD164417
-Phone Number: 918787595592
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 20:13:06
-
-Record #3
-Order ID: LTJPD164409
-Phone Number: 919662281390
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 20:00:33
-
-Record #4
-Order ID: LTJPD164401
-Phone Number: 918899768164
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 19:53:25
-
-Record #5
-Order ID: LTJPD164398
-Phone Number: 919632135596
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 19:29:25
-
-Record #6
-Order ID: LTJPD164399
-Phone Number: 919728126004
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 19:29:09
-
-Record #7
-Order ID: LTJPD164388
-Phone Number: 919572445108
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 18:53:45
-
-Record #8
-Order ID: LTJPD164384
-Phone Number: 919572445108
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 18:47:50
-
-Record #9
-Order ID: LTJPD164374
-Phone Number: 917338870422
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 18:40:03
-
-Record #10
-Order ID: LTJPD164372
-Phone Number: 919660606419
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 18:26:07
-
-Record #11
-Order ID: LTJPD164373
-Phone Number: 916376386503
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 18:23:06
-
-Record #12
-Order ID: LTJPD164369
-Phone Number: 919467365943
-Amount: 1,000.00
-Tax Fee: 48.0
-Time: 2026-02-08 18:06:02
-
-Record #13
-Order ID: LTJPD164367
-Phone Number: 916381906593
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 18:04:18
-
-Record #14
-Order ID: LTJPD164359
-Phone Number: 917355105881
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 17:48:04
-
-Record #15
-Order ID: LTJPD164352
-Phone Number: 919467365943
-Amount: 1,000.00
-Tax Fee: 48.0
-Time: 2026-02-08 17:16:04
-
-Record #16
-Order ID: LTJPD164347
-Phone Number: 917355105881
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 16:51:14
-
-Record #17
-Order ID: LTJPD164341
-Phone Number: 919632135596
-Amount: 2,000.00
-Tax Fee: 96.0
-Time: 2026-02-08 15:52:58
-
-Record #18
-Order ID: LTJPD164330
-Phone Number: 918419800613
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 15:07:57
-
-Record #19
-Order ID: LTJPD164316
-Phone Number: 918309491707
-Amount: 1,000.00
-Tax Fee: 48.0
-Time: 2026-02-08 14:03:07
-
-Record #20
-Order ID: LTJPD164309
-Phone Number: 918309491707
-Amount: 1,000.00
-Tax Fee: 48.0
-Time: 2026-02-08 13:31:08
-
-Record #21
-Order ID: LTJPD164302
-Phone Number: 918309491707
-Amount: 1,000.00
-Tax Fee: 48.0
-Time: 2026-02-08 13:09:51
-
-Record #22
-Order ID: LTJPD164305
-Phone Number: 916300844102
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 13:09:42
-
-Record #23
-Order ID: LTJPD164301
-Phone Number: 919572445108
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 12:43:28
-
-Record #24
-Order ID: LTJPD164296
-Phone Number: -
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 12:16:18
-
-Record #25
-Order ID: LTJPD164292
-Phone Number: 919467365943
-Amount: 1,000.00
-Tax Fee: 48.0
-Time: 2026-02-08 11:38:57
-
-Record #26
-Order ID: LTJPD164291
-Phone Number: 916263488207
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 11:27:37
-
-Record #27
-Order ID: LTJPD164283
-Phone Number: 919467365943
-Amount: 1,000.00
-Tax Fee: 48.0
-Time: 2026-02-08 11:13:57
-
-Record #28
-Order ID: LTJPD164271
-Phone Number: 916300844102
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 09:22:56
-
-Record #29
-Order ID: LTJPD164264
-Phone Number: 919065201535
-Amount: 1,000.00
-Tax Fee: 48.0
-Time: 2026-02-08 03:34:07
-
-Record #30
-Order ID: LTJPD164236
-Phone Number: -
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 02:49:15
-
-Record #31
-Order ID: LTJPD164248
-Phone Number: 919893265544
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 02:39:23
-
-Record #32
-Order ID: LTJPD164231
-Phone Number: 919660606419
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 02:11:54
-
-Record #33
-Order ID: LTJPD164223
-Phone Number: 919660606419
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 01:46:50
-
-Record #34
-Order ID: LTJPD164213
-Phone Number: 919709306373
-Amount: 1,000.00
-Tax Fee: 48.0
-Time: 2026-02-08 01:18:36
-
-Record #35
-Order ID: LTJPD164208
-Phone Number: 919660606419
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 01:18:19
-
-Record #36
-Order ID: LTJPD164177
-Phone Number: 919709306373
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-08 00:18:30
-
-Record #37
-Order ID: LTJPD164159
-Phone Number: 917077175811
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 23:45:52
-
-Record #38
-Order ID: LTJPD164151
-Phone Number: 918302672328
-Amount: 1,000.00
-Tax Fee: 48.0
-Time: 2026-02-07 23:07:58
-
-Record #39
-Order ID: LTJPD164148
-Phone Number: 917093657852
-Amount: 1,000.00
-Tax Fee: 48.0
-Time: 2026-02-07 22:42:31
-
-Record #40
-Order ID: LTJPD164147
-Phone Number: 918010415485
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 22:22:13
-
-Record #41
-Order ID: LTJPD164139
-Phone Number: 918930165143
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 21:41:40
-
-Record #42
-Order ID: LTJPD164129
-Phone Number: 919054913547
-Amount: 1,000.00
-Tax Fee: 48.0
-Time: 2026-02-07 21:11:42
-
-Record #43
-Order ID: LTJPD164101
-Phone Number: 918309491707
-Amount: 1,000.00
-Tax Fee: 48.0
-Time: 2026-02-07 18:17:12
-
-Record #44
-Order ID: LTJPD164100
-Phone Number: 919906272530
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 18:14:15
-
-Record #45
-Order ID: LTJPD164094
-Phone Number: 919906272530
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 17:57:10
-
-Record #46
-Order ID: LTJPD164095
-Phone Number: 919700646497
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 17:48:07
-
-Record #47
-Order ID: LTJPD164092
-Phone Number: 919460627275
-Amount: 1,500.00
-Tax Fee: 72.0
-Time: 2026-02-07 17:44:39
-
-Record #48
-Order ID: LTJPD164082
-Phone Number: 918309491707
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 17:18:06
-
-Record #49
-Order ID: LTJPD164080
-Phone Number: 918309491707
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 17:10:47
-
-Record #50
-Order ID: LTJPD164079
-Phone Number: 918419800613
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 17:07:50
-
-Record #51
-Order ID: LTJPD164076
-Phone Number: 919539715161
-Amount: 1,000.00
-Tax Fee: 48.0
-Time: 2026-02-07 17:01:32
-
-Record #52
-Order ID: LTJPD164064
-Phone Number: -
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 16:51:13
-
-Record #53
-Order ID: LTJPD164070
-Phone Number: 919871381829
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 16:13:12
-
-Record #54
-Order ID: LTJPD164067
-Phone Number: 916351945256
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 15:33:48
-
-Record #55
-Order ID: LTJPD164062
-Phone Number: 919680386847
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 14:44:51
-
-Record #56
-Order ID: LTJPD164055
-Phone Number: 919906272530
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 13:58:09
-
-Record #57
-Order ID: LTJPD164052
-Phone Number: 919949916061
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 13:08:55
-
-Record #58
-Order ID: LTJPD164051
-Phone Number: 916009127962
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 12:58:06
-
-Record #59
-Order ID: LTJPD164048
-Phone Number: 919828887126
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 12:57:16
-
-Record #60
-Order ID: LTJPD164045
-Phone Number: 917620980181
-Amount: 1,500.00
-Tax Fee: 72.0
-Time: 2026-02-07 10:19:01
-
-Record #61
-Order ID: LTJPD164042
-Phone Number: 917620980181
-Amount: 4,000.00
-Tax Fee: 192.0
-Time: 2026-02-07 09:45:36
-
-Record #62
-Order ID: LTJPD164040
-Phone Number: 917660086080
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 09:36:56
-
-Record #63
-Order ID: LTJPD164036
-Phone Number: 917660086080
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 08:43:21
-
-Record #64
-Order ID: LTJPD164035
-Phone Number: 918119887604
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 07:51:39
-
-Record #65
-Order ID: LTJPD164031
-Phone Number: 917660086080
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 07:48:01
-
-Record #66
-Order ID: LTJPD164007
-Phone Number: -
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 03:22:06
-
-Record #67
-Order ID: LTJPD163972
-Phone Number: 919680386847
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 01:55:40
-
-Record #68
-Order ID: LTJPD163990
-Phone Number: 918725054778
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 01:51:45
-
-Record #69
-Order ID: LTJPD163989
-Phone Number: 916396208829
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 01:48:13
-
-Record #70
-Order ID: LTJPD163988
-Phone Number: 918418903627
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 01:46:27
-
-Record #71
-Order ID: LTJPD163971
-Phone Number: 919709306373
-Amount: 1,000.00
-Tax Fee: 48.0
-Time: 2026-02-07 01:13:40
-
-Record #72
-Order ID: LTJPD163970
-Phone Number: 919680386847
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 00:54:38
-
-Record #73
-Order ID: LTJPD163968
-Phone Number: 919828414978
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 00:51:06
-
-Record #74
-Order ID: LTJPD163962
-Phone Number: 919334183758
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 00:14:21
-
-Record #75
-Order ID: LTJPD163956
-Phone Number: 918418903627
-Amount: 500.00
-Tax Fee: 24.0
-Time: 2026-02-07 00:02:01
-
->> Total Amount for SKPAY: Rs 52,000.00
-
-==== YTPAY (45 records) | Total Amount: Rs 25,710.00 | Total Fee: Rs 1542.60 ====
-
-Record #1
-Order ID: LTJPD164416
-Phone Number: 919328851453
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-08 20:09:36
-
-Record #2
-Order ID: LTJPD164403
-Phone Number: 919328851453
-Amount: 540.00
-Tax Fee: 32.4
-Time: 2026-02-08 19:43:40
-
-Record #3
-Order ID: LTJPD164396
-Phone Number: 917355545353
-Amount: 300.00
-Tax Fee: 18.0
-Time: 2026-02-08 19:00:44
-
-Record #4
-Order ID: LTJPD164392
-Phone Number: 918749062884
-Amount: 300.00
-Tax Fee: 18.0
-Time: 2026-02-08 18:57:54
-
-Record #5
-Order ID: LTJPD164390
-Phone Number: 919726244102
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-08 18:54:44
-
-Record #6
-Order ID: LTJPD164333
-Phone Number: 919328851453
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-08 15:23:54
-
-Record #7
-Order ID: LTJPD164332
-Phone Number: 919328851453
-Amount: 300.00
-Tax Fee: 18.0
-Time: 2026-02-08 15:17:16
-
-Record #8
-Order ID: LTJPD164331
-Phone Number: 919328851453
-Amount: 530.00
-Tax Fee: 31.8
-Time: 2026-02-08 15:10:45
-
-Record #9
-Order ID: LTJPD164328
+Order ID: LTJPD164607
 Phone Number: 919537788142
 Amount: 1,000.00
-Tax Fee: 60.0
-Time: 2026-02-08 14:38:15
+Tax Fee: 45.0
+Time: 2026-02-09 15:06:11
 
-Record #10
-Order ID: LTJPD164320
-Phone Number: 919703453088
-Amount: 300.00
-Tax Fee: 18.0
-Time: 2026-02-08 14:34:15
-
-Record #11
-Order ID: LTJPD164312
-Phone Number: 919703453088
-Amount: 600.00
-Tax Fee: 36.0
-Time: 2026-02-08 13:50:12
-
-Record #12
-Order ID: LTJPD164310
-Phone Number: 918200359877
+Record #2
+Order ID: LTJPD164591
+Phone Number: 919537788142
 Amount: 1,000.00
-Tax Fee: 60.0
-Time: 2026-02-08 13:41:10
+Tax Fee: 45.0
+Time: 2026-02-09 14:22:07
 
-Record #13
-Order ID: LTJPD164298
-Phone Number: 918879312757
-Amount: 300.00
-Tax Fee: 18.0
-Time: 2026-02-08 12:16:46
-
-Record #14
-Order ID: LTJPD164294
-Phone Number: 918749062884
-Amount: 300.00
-Tax Fee: 18.0
-Time: 2026-02-08 12:10:34
-
-Record #15
-Order ID: LTJPD164280
-Phone Number: 918200359877
-Amount: 1,000.00
-Tax Fee: 60.0
-Time: 2026-02-08 10:59:58
-
-Record #16
-Order ID: LTJPD164277
-Phone Number: 918749062884
+Record #3
+Order ID: LTJPD164489
+Phone Number: 919106090184
 Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-08 10:20:35
+Tax Fee: 22.5
+Time: 2026-02-08 23:02:31
 
-Record #17
-Order ID: LTJPD164276
-Phone Number: 918749062884
-Amount: 300.00
-Tax Fee: 18.0
-Time: 2026-02-08 10:08:57
-
-Record #18
-Order ID: LTJPD164274
-Phone Number: 918302369665
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-08 09:39:34
-
-Record #19
-Order ID: LTJPD164251
-Phone Number: 916263488207
-Amount: 2,000.00
-Tax Fee: 120.0
-Time: 2026-02-08 02:43:24
-
-Record #20
-Order ID: LTJPD164212
-Phone Number: 919462921240
-Amount: 1,000.00
-Tax Fee: 60.0
-Time: 2026-02-08 01:15:12
-
-Record #21
-Order ID: LTJPD164199
-Phone Number: 919328851453
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-08 00:59:25
-
-Record #22
-Order ID: LTJPD164181
-Phone Number: 919328851453
-Amount: 350.00
-Tax Fee: 21.0
-Time: 2026-02-08 00:49:14
-
-Record #23
-Order ID: LTJPD164176
-Phone Number: 918749062884
-Amount: 300.00
-Tax Fee: 18.0
-Time: 2026-02-08 00:15:57
-
-Record #24
-Order ID: LTJPD164173
-Phone Number: 918302369665
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-08 00:12:10
-
-Record #25
-Order ID: LTJPD164132
-Phone Number: 917404386521
-Amount: 2,000.00
-Tax Fee: 120.0
-Time: 2026-02-07 21:11:40
-
-Record #26
-Order ID: LTJPD164119
-Phone Number: 918955418232
-Amount: 1,000.00
-Tax Fee: 60.0
-Time: 2026-02-07 20:21:34
-
-Record #27
-Order ID: LTJPD164117
+Record #4
+Order ID: LTJPD164456
 Phone Number: 916003370591
 Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-07 19:50:27
+Tax Fee: 22.5
+Time: 2026-02-08 21:42:47
 
-Record #28
-Order ID: LTJPD164111
-Phone Number: 918749062884
-Amount: 300.00
-Tax Fee: 18.0
-Time: 2026-02-07 19:39:56
-
-Record #29
-Order ID: LTJPD164106
-Phone Number: 918879312757
+Record #5
+Order ID: LTJPD164438
+Phone Number: 918102211876
 Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-07 19:09:55
+Tax Fee: 22.5
+Time: 2026-02-08 20:45:50
 
-Record #30
-Order ID: LTJPD164103
-Phone Number: 918879312757
-Amount: 300.00
-Tax Fee: 18.0
-Time: 2026-02-07 18:57:19
-
-Record #31
-Order ID: LTJPD164096
-Phone Number: 919328851453
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-07 17:49:19
-
-Record #32
-Order ID: LTJPD164084
-Phone Number: 919328851453
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-07 17:25:34
-
-Record #33
-Order ID: LTJPD164083
-Phone Number: 919328851453
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-07 17:19:24
-
-Record #34
-Order ID: LTJPD164081
-Phone Number: 919328851453
-Amount: 390.00
-Tax Fee: 23.4
-Time: 2026-02-07 17:10:48
-
-Record #35
-Order ID: LTJPD164059
-Phone Number: 919328851453
-Amount: 510.00
-Tax Fee: 30.6
-Time: 2026-02-07 14:22:04
-
-Record #36
-Order ID: LTJPD164054
-Phone Number: 919328851453
-Amount: 450.00
-Tax Fee: 27.0
-Time: 2026-02-07 13:52:16
-
-Record #37
-Order ID: LTJPD164049
-Phone Number: 918749062884
-Amount: 300.00
-Tax Fee: 18.0
-Time: 2026-02-07 12:56:52
-
-Record #38
-Order ID: LTJPD163978
-Phone Number: 918918160454
-Amount: 1,000.00
-Tax Fee: 60.0
-Time: 2026-02-07 10:24:03
-
-Record #39
-Order ID: LTJPD164002
-Phone Number: 918879312757
-Amount: 300.00
-Tax Fee: 18.0
-Time: 2026-02-07 02:42:15
-
-Record #40
-Order ID: LTJPD163966
-Phone Number: 919328851453
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-07 00:44:40
-
-Record #41
-Order ID: LTJPD163964
-Phone Number: 919328851453
-Amount: 440.00
-Tax Fee: 26.4
-Time: 2026-02-07 00:23:39
-
-Record #42
-Order ID: LTJPD163963
-Phone Number: 919328851453
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-07 00:14:44
-
-Record #43
-Order ID: LTJPD163958
-Phone Number: 918879312757
-Amount: 300.00
-Tax Fee: 18.0
-Time: 2026-02-07 00:11:21
-
-Record #44
-Order ID: LTJPD163961
-Phone Number: 919328851453
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-07 00:10:05
-
-Record #45
-Order ID: LTJPD163954
-Phone Number: 919328851453
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-07 00:00:00
-
->> Total Amount for YTPAY: Rs 25,710.00
-
-==== OSPAY (7 records) | Total Amount: Rs 7,000.00 | Total Fee: Rs 315.00 ====
-
-Record #1
+Record #6
 Order ID: LTJPD164395
 Phone Number: 918524927414
 Amount: 1,000.00
 Tax Fee: 45.0
-Time: 2026-02-08 19:03:39
+Time: 2026-02-08 17:33:39
 
-Record #2
+Record #7
 Order ID: LTJPD164381
 Phone Number: 917660086080
 Amount: 500.00
 Tax Fee: 22.5
-Time: 2026-02-08 18:45:55
+Time: 2026-02-08 17:15:55
 
-Record #3
+Record #8
 Order ID: LTJPD164354
 Phone Number: 917404386521
 Amount: 2,000.00
 Tax Fee: 90.0
-Time: 2026-02-08 17:25:40
+Time: 2026-02-08 15:55:40
 
-Record #4
+Record #9
 Order ID: LTJPD164257
 Phone Number: 918102211876
 Amount: 500.00
 Tax Fee: 22.5
-Time: 2026-02-08 02:50:43
+Time: 2026-02-08 01:20:43
 
-Record #5
-Order ID: LTJPD164122
-Phone Number: 919918043957
-Amount: 500.00
-Tax Fee: 22.5
-Time: 2026-02-07 20:37:37
+>> Total Amount for OSPAY: Rs 7,500.00
 
-Record #6
-Order ID: LTJPD164091
-Phone Number: 919353983566
-Amount: 1,500.00
-Tax Fee: 67.5
-Time: 2026-02-07 19:07:33
-
-Record #7
-Order ID: LTJPD164105
-Phone Number: 918317099208
-Amount: 1,000.00
-Tax Fee: 45.0
-Time: 2026-02-07 19:02:31
-
->> Total Amount for OSPAY: Rs 7,000.00
-
-==== TOPPAY (16 records) | Total Amount: Rs 11,000.00 | Total Fee: Rs 660.00 ====
+==== SKPAY (58 records) | Total Amount: Rs 43,800.00 | Total Fee: Rs 2102.40 ====
 
 Record #1
+Order ID: LTJPD164605
+Phone Number: 919817792911
+Amount: 1,000.00
+Tax Fee: 48.0
+Time: 2026-02-09 15:04:46
+
+Record #2
+Order ID: LTJPD164592
+Phone Number: 918879312757
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-09 14:21:36
+
+Record #3
+Order ID: LTJPD164581
+Phone Number: 916263488207
+Amount: 1,000.00
+Tax Fee: 48.0
+Time: 2026-02-09 13:32:41
+
+Record #4
+Order ID: LTJPD164577
+Phone Number: 918419800613
+Amount: 1,500.00
+Tax Fee: 72.0
+Time: 2026-02-09 13:05:06
+
+Record #5
+Order ID: LTJPD164567
+Phone Number: 919572445108
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-09 11:37:16
+
+Record #6
+Order ID: LTJPD164565
+Phone Number: 919700646497
+Amount: 800.00
+Tax Fee: 38.4
+Time: 2026-02-09 10:47:02
+
+Record #7
+Order ID: LTJPD164564
+Phone Number: 919572445108
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-09 10:37:11
+
+Record #8
+Order ID: LTJPD164562
+Phone Number: 919420167571
+Amount: 5,000.00
+Tax Fee: 240.0
+Time: 2026-02-09 09:44:11
+
+Record #9
+Order ID: LTJPD164561
+Phone Number: 919085901020
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-09 09:39:05
+
+Record #10
+Order ID: LTJPD164555
+Phone Number: 917019574270
+Amount: 1,000.00
+Tax Fee: 48.0
+Time: 2026-02-09 04:06:15
+
+Record #11
+Order ID: LTJPD164553
+Phone Number: 917908115067
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-09 03:52:17
+
+Record #12
+Order ID: LTJPD164499
+Phone Number: 919660606419
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 23:59:16
+
+Record #13
+Order ID: LTJPD164502
+Phone Number: 917338870422
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 23:53:10
+
+Record #14
+Order ID: LTJPD164498
+Phone Number: 919467365943
+Amount: 1,000.00
+Tax Fee: 48.0
+Time: 2026-02-08 23:37:29
+
+Record #15
+Order ID: LTJPD164497
+Phone Number: 919660606419
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 23:35:32
+
+Record #16
+Order ID: LTJPD164496
+Phone Number: 919467365943
+Amount: 1,000.00
+Tax Fee: 48.0
+Time: 2026-02-08 23:22:11
+
+Record #17
+Order ID: LTJPD164485
+Phone Number: 919709306373
+Amount: 1,000.00
+Tax Fee: 48.0
+Time: 2026-02-08 22:49:48
+
+Record #18
+Order ID: LTJPD164484
+Phone Number: 917001137262
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 22:47:03
+
+Record #19
+Order ID: LTJPD164480
+Phone Number: 919467365943
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 22:42:17
+
+Record #20
+Order ID: LTJPD164472
+Phone Number: 917001137262
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 22:25:18
+
+Record #21
+Order ID: LTJPD164458
+Phone Number: 916352545986
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 22:04:01
+
+Record #22
+Order ID: LTJPD164420
+Phone Number: 919662281390
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 20:30:14
+
+Record #23
+Order ID: LTJPD164429
+Phone Number: 916396208829
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 20:28:50
+
+Record #24
+Order ID: LTJPD164426
+Phone Number: 919709306373
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 20:13:40
+
+Record #25
+Order ID: LTJPD164421
+Phone Number: 918930165143
+Amount: 1,000.00
+Tax Fee: 48.0
+Time: 2026-02-08 19:11:33
+
+Record #26
+Order ID: LTJPD164418
+Phone Number: 918930165143
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 18:44:33
+
+Record #27
+Order ID: LTJPD164417
+Phone Number: 918787595592
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 18:43:06
+
+Record #28
+Order ID: LTJPD164409
+Phone Number: 919662281390
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 18:30:33
+
+Record #29
+Order ID: LTJPD164401
+Phone Number: 918899768164
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 18:23:25
+
+Record #30
+Order ID: LTJPD164398
+Phone Number: 919632135596
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 17:59:25
+
+Record #31
+Order ID: LTJPD164399
+Phone Number: 919728126004
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 17:59:09
+
+Record #32
+Order ID: LTJPD164388
+Phone Number: 919572445108
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 17:23:45
+
+Record #33
+Order ID: LTJPD164384
+Phone Number: 919572445108
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 17:17:50
+
+Record #34
+Order ID: LTJPD164374
+Phone Number: 917338870422
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 17:10:03
+
+Record #35
+Order ID: LTJPD164372
+Phone Number: 919660606419
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 16:56:07
+
+Record #36
+Order ID: LTJPD164373
+Phone Number: 916376386503
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 16:53:06
+
+Record #37
+Order ID: LTJPD164369
+Phone Number: 919467365943
+Amount: 1,000.00
+Tax Fee: 48.0
+Time: 2026-02-08 16:36:02
+
+Record #38
+Order ID: LTJPD164367
+Phone Number: 916381906593
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 16:34:18
+
+Record #39
+Order ID: LTJPD164359
+Phone Number: 917355105881
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 16:18:04
+
+Record #40
+Order ID: LTJPD164352
+Phone Number: 919467365943
+Amount: 1,000.00
+Tax Fee: 48.0
+Time: 2026-02-08 15:46:04
+
+Record #41
+Order ID: LTJPD164347
+Phone Number: 917355105881
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 15:21:14
+
+Record #42
+Order ID: LTJPD164341
+Phone Number: 919632135596
+Amount: 2,000.00
+Tax Fee: 96.0
+Time: 2026-02-08 14:22:58
+
+Record #43
+Order ID: LTJPD164330
+Phone Number: 918419800613
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 13:37:57
+
+Record #44
+Order ID: LTJPD164316
+Phone Number: 918309491707
+Amount: 1,000.00
+Tax Fee: 48.0
+Time: 2026-02-08 12:33:07
+
+Record #45
+Order ID: LTJPD164309
+Phone Number: 918309491707
+Amount: 1,000.00
+Tax Fee: 48.0
+Time: 2026-02-08 12:01:08
+
+Record #46
+Order ID: LTJPD164302
+Phone Number: 918309491707
+Amount: 1,000.00
+Tax Fee: 48.0
+Time: 2026-02-08 11:39:51
+
+Record #47
+Order ID: LTJPD164305
+Phone Number: 916300844102
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 11:39:42
+
+Record #48
+Order ID: LTJPD164301
+Phone Number: 919572445108
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 11:13:28
+
+Record #49
+Order ID: LTJPD164296
+Phone Number: -
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 10:46:18
+
+Record #50
+Order ID: LTJPD164292
+Phone Number: 919467365943
+Amount: 1,000.00
+Tax Fee: 48.0
+Time: 2026-02-08 10:08:57
+
+Record #51
+Order ID: LTJPD164291
+Phone Number: 916263488207
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 09:57:37
+
+Record #52
+Order ID: LTJPD164283
+Phone Number: 919467365943
+Amount: 1,000.00
+Tax Fee: 48.0
+Time: 2026-02-08 09:43:57
+
+Record #53
+Order ID: LTJPD164271
+Phone Number: 916300844102
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 07:52:56
+
+Record #54
+Order ID: LTJPD164264
+Phone Number: 919065201535
+Amount: 1,000.00
+Tax Fee: 48.0
+Time: 2026-02-08 02:04:07
+
+Record #55
+Order ID: LTJPD164236
+Phone Number: -
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 01:19:15
+
+Record #56
+Order ID: LTJPD164248
+Phone Number: 919893265544
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 01:09:23
+
+Record #57
+Order ID: LTJPD164231
+Phone Number: 919660606419
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 00:41:54
+
+Record #58
+Order ID: LTJPD164223
+Phone Number: 919660606419
+Amount: 500.00
+Tax Fee: 24.0
+Time: 2026-02-08 00:16:50
+
+>> Total Amount for SKPAY: Rs 43,800.00
+
+==== YTPAY (41 records) | Total Amount: Rs 23,824.00 | Total Fee: Rs 1429.44 ====
+
+Record #1
+Order ID: LTJPD164600
+Phone Number: 919328851453
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-09 15:00:24
+
+Record #2
+Order ID: LTJPD164599
+Phone Number: 919328851453
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-09 14:54:48
+
+Record #3
+Order ID: LTJPD164595
+Phone Number: 919703453088
+Amount: 300.00
+Tax Fee: 18.0
+Time: 2026-02-09 14:29:32
+
+Record #4
+Order ID: LTJPD164590
+Phone Number: 919328851453
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-09 14:20:59
+
+Record #5
+Order ID: LTJPD164586
+Phone Number: 919703453088
+Amount: 350.00
+Tax Fee: 21.0
+Time: 2026-02-09 14:08:29
+
+Record #6
+Order ID: LTJPD164585
+Phone Number: 918879312757
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-09 14:06:25
+
+Record #7
+Order ID: LTJPD164582
+Phone Number: 919703453088
+Amount: 400.00
+Tax Fee: 24.0
+Time: 2026-02-09 13:50:43
+
+Record #8
+Order ID: LTJPD164580
+Phone Number: 918749062884
+Amount: 300.00
+Tax Fee: 18.0
+Time: 2026-02-09 13:22:23
+
+Record #9
+Order ID: LTJPD164579
+Phone Number: 919703453088
+Amount: 600.00
+Tax Fee: 36.0
+Time: 2026-02-09 13:10:18
+
+Record #10
+Order ID: LTJPD164574
+Phone Number: 919949916061
+Amount: 300.00
+Tax Fee: 18.0
+Time: 2026-02-09 12:50:19
+
+Record #11
+Order ID: LTJPD164569
+Phone Number: 919328851453
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-09 12:04:14
+
+Record #12
+Order ID: LTJPD164568
+Phone Number: 919328851453
+Amount: 400.00
+Tax Fee: 24.0
+Time: 2026-02-09 11:59:54
+
+Record #13
+Order ID: LTJPD164566
+Phone Number: 918749062884
+Amount: 300.00
+Tax Fee: 18.0
+Time: 2026-02-09 11:02:59
+
+Record #14
+Order ID: LTJPD164549
+Phone Number: 918879312757
+Amount: 300.00
+Tax Fee: 18.0
+Time: 2026-02-09 02:12:28
+
+Record #15
+Order ID: LTJPD164548
+Phone Number: 919703453088
+Amount: 300.00
+Tax Fee: 18.0
+Time: 2026-02-09 02:01:26
+
+Record #16
+Order ID: LTJPD164545
+Phone Number: 916393153457
+Amount: 501.00
+Tax Fee: 30.06
+Time: 2026-02-09 01:01:53
+
+Record #17
+Order ID: LTJPD164539
+Phone Number: 919328851453
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-09 00:32:54
+
+Record #18
+Order ID: LTJPD164536
+Phone Number: 916393153457
+Amount: 503.00
+Tax Fee: 30.18
+Time: 2026-02-09 00:26:38
+
+Record #19
+Order ID: LTJPD164513
+Phone Number: 919784257643
+Amount: 1,000.00
+Tax Fee: 60.0
+Time: 2026-02-08 23:59:25
+
+Record #20
+Order ID: LTJPD164452
+Phone Number: 918200359877
+Amount: 1,500.00
+Tax Fee: 90.0
+Time: 2026-02-08 21:21:55
+
+Record #21
+Order ID: LTJPD164440
+Phone Number: 917404386521
+Amount: 2,000.00
+Tax Fee: 120.0
+Time: 2026-02-08 20:48:20
+
+Record #22
+Order ID: LTJPD164435
+Phone Number: 919328851453
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-08 20:39:26
+
+Record #23
+Order ID: LTJPD164416
+Phone Number: 919328851453
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-08 18:39:36
+
+Record #24
+Order ID: LTJPD164403
+Phone Number: 919328851453
+Amount: 540.00
+Tax Fee: 32.4
+Time: 2026-02-08 18:13:40
+
+Record #25
+Order ID: LTJPD164396
+Phone Number: 917355545353
+Amount: 300.00
+Tax Fee: 18.0
+Time: 2026-02-08 17:30:44
+
+Record #26
+Order ID: LTJPD164392
+Phone Number: 918749062884
+Amount: 300.00
+Tax Fee: 18.0
+Time: 2026-02-08 17:27:54
+
+Record #27
+Order ID: LTJPD164390
+Phone Number: 919726244102
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-08 17:24:44
+
+Record #28
+Order ID: LTJPD164333
+Phone Number: 919328851453
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-08 13:53:54
+
+Record #29
+Order ID: LTJPD164332
+Phone Number: 919328851453
+Amount: 300.00
+Tax Fee: 18.0
+Time: 2026-02-08 13:47:16
+
+Record #30
+Order ID: LTJPD164331
+Phone Number: 919328851453
+Amount: 530.00
+Tax Fee: 31.8
+Time: 2026-02-08 13:40:45
+
+Record #31
+Order ID: LTJPD164328
+Phone Number: 919537788142
+Amount: 1,000.00
+Tax Fee: 60.0
+Time: 2026-02-08 13:08:15
+
+Record #32
+Order ID: LTJPD164320
+Phone Number: 919703453088
+Amount: 300.00
+Tax Fee: 18.0
+Time: 2026-02-08 13:04:15
+
+Record #33
+Order ID: LTJPD164312
+Phone Number: 919703453088
+Amount: 600.00
+Tax Fee: 36.0
+Time: 2026-02-08 12:20:12
+
+Record #34
+Order ID: LTJPD164310
+Phone Number: 918200359877
+Amount: 1,000.00
+Tax Fee: 60.0
+Time: 2026-02-08 12:11:10
+
+Record #35
+Order ID: LTJPD164298
+Phone Number: 918879312757
+Amount: 300.00
+Tax Fee: 18.0
+Time: 2026-02-08 10:46:46
+
+Record #36
+Order ID: LTJPD164294
+Phone Number: 918749062884
+Amount: 300.00
+Tax Fee: 18.0
+Time: 2026-02-08 10:40:34
+
+Record #37
+Order ID: LTJPD164280
+Phone Number: 918200359877
+Amount: 1,000.00
+Tax Fee: 60.0
+Time: 2026-02-08 09:29:58
+
+Record #38
+Order ID: LTJPD164277
+Phone Number: 918749062884
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-08 08:50:35
+
+Record #39
+Order ID: LTJPD164276
+Phone Number: 918749062884
+Amount: 300.00
+Tax Fee: 18.0
+Time: 2026-02-08 08:38:57
+
+Record #40
+Order ID: LTJPD164274
+Phone Number: 918302369665
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-08 08:09:34
+
+Record #41
+Order ID: LTJPD164251
+Phone Number: 916263488207
+Amount: 2,000.00
+Tax Fee: 120.0
+Time: 2026-02-08 01:13:24
+
+>> Total Amount for YTPAY: Rs 23,824.00
+
+==== TOPPAY (16 records) | Total Amount: Rs 10,000.00 | Total Fee: Rs 600.00 ====
+
+Record #1
+Order ID: LTJPD164597
+Phone Number: 919328851453
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-09 14:32:03
+
+Record #2
+Order ID: LTJPD164594
+Phone Number: 919328851453
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-09 14:25:41
+
+Record #3
+Order ID: LTJPD164572
+Phone Number: 919784257643
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-09 12:24:55
+
+Record #4
+Order ID: LTJPD164556
+Phone Number: 918302257947
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-09 06:36:25
+
+Record #5
+Order ID: LTJPD164525
+Phone Number: 918725837239
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-09 00:18:13
+
+Record #6
+Order ID: LTJPD164519
+Phone Number: 919144161029
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-09 00:12:43
+
+Record #7
+Order ID: LTJPD164476
+Phone Number: 917908347146
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-08 22:24:44
+
+Record #8
+Order ID: LTJPD164443
+Phone Number: 919784257643
+Amount: 2,000.00
+Tax Fee: 120.0
+Time: 2026-02-08 21:16:25
+
+Record #9
+Order ID: LTJPD164366
+Phone Number: 918000712708
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-08 20:34:48
+
+Record #10
+Order ID: LTJPD164427
+Phone Number: 917976858425
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-08 20:09:50
+
+Record #11
+Order ID: LTJPD164424
+Phone Number: 917051261412
+Amount: 500.00
+Tax Fee: 30.0
+Time: 2026-02-08 19:53:30
+
+Record #12
 Order ID: LTJPD164343
 Phone Number: 918267966455
 Amount: 500.00
 Tax Fee: 30.0
-Time: 2026-02-08 15:52:33
+Time: 2026-02-08 14:22:33
 
-Record #2
+Record #13
 Order ID: LTJPD164337
 Phone Number: 919328851453
 Amount: 500.00
 Tax Fee: 30.0
-Time: 2026-02-08 15:33:56
+Time: 2026-02-08 14:03:56
 
-Record #3
+Record #14
 Order ID: LTJPD164319
 Phone Number: 917660086080
 Amount: 500.00
 Tax Fee: 30.0
-Time: 2026-02-08 14:06:32
+Time: 2026-02-08 12:36:32
 
-Record #4
+Record #15
 Order ID: LTJPD164273
 Phone Number: 918524927414
 Amount: 1,000.00
 Tax Fee: 60.0
-Time: 2026-02-08 09:24:53
+Time: 2026-02-08 07:54:53
 
-Record #5
+Record #16
 Order ID: LTJPD164221
 Phone Number: 919328851453
 Amount: 500.00
 Tax Fee: 30.0
-Time: 2026-02-08 01:43:58
+Time: 2026-02-08 00:13:58
 
-Record #6
-Order ID: LTJPD164214
-Phone Number: 919592911117
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-08 01:18:53
+>> Total Amount for TOPPAY: Rs 10,000.00
 
-Record #7
-Order ID: LTJPD164153
-Phone Number: 917976858425
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-07 23:34:09
-
-Record #8
-Order ID: LTJPD164150
-Phone Number: 918010415485
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-07 22:42:39
-
-Record #9
-Order ID: LTJPD164138
-Phone Number: 916284121449
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-07 21:29:32
-
-Record #10
-Order ID: LTJPD164127
-Phone Number: 917976858425
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-07 21:09:53
-
-Record #11
-Order ID: LTJPD164118
-Phone Number: 916378764222
-Amount: 1,500.00
-Tax Fee: 90.0
-Time: 2026-02-07 20:17:44
-
-Record #12
-Order ID: LTJPD164110
-Phone Number: 918879312757
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-07 19:37:13
-
-Record #13
-Order ID: LTJPD164073
-Phone Number: 919927261810
-Amount: 1,500.00
-Tax Fee: 90.0
-Time: 2026-02-07 16:36:24
-
-Record #14
-Order ID: LTJPD164023
-Phone Number: 919592911117
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-07 04:04:43
-
-Record #15
-Order ID: LTJPD164000
-Phone Number: 919966959653
-Amount: 1,000.00
-Tax Fee: 60.0
-Time: 2026-02-07 02:32:38
-
-Record #16
-Order ID: LTJPD163998
-Phone Number: 918453238367
-Amount: 500.00
-Tax Fee: 30.0
-Time: 2026-02-07 02:28:04
-
->> Total Amount for TOPPAY: Rs 11,000.00
-
-==== BOMBAYPAY (4 records) | Total Amount: Rs 3,000.00 | Total Fee: Rs 165.00 ====
+==== BOMBAYPAY (1 record) | Total Amount: Rs 2,000.00 | Total Fee: Rs 110.00 ====
 
 Record #1
-Order ID: LTJPD164179
-Phone Number: 919944239628
-Amount: 500.00
-Tax Fee: 27.5
-Time: 2026-02-08 00:28:05
+Order ID: LTJPD164479
+Phone Number: 918741903714
+Amount: 2,000.00
+Tax Fee: 110.0
+Time: 2026-02-08 22:52:04
+
+>> Total Amount for BOMBAYPAY: Rs 2,000.00
+================================================================================
+                              WITHDRAWALS
+================================================================================
+
+==== TOPPAY (9 records) | Total Amount: Rs 17,964.00 | Total Fee: Rs 682.74 ====
+
+Record #1
+Order ID: LTJPW12339
+Phone Number: 916396208829
+Amount: 4,000.00
+Tax Fee: 146.0
+Time: 2026-02-09 13:23:33
 
 Record #2
-Order ID: LTJPD164165
-Phone Number: 918879312757
-Amount: 500.00
-Tax Fee: 27.5
-Time: 2026-02-07 23:46:46
+Order ID: LTJPW12331
+Phone Number: 917976858425
+Amount: 3,000.00
+Tax Fee: 111.0
+Time: 2026-02-08 22:49:42
 
 Record #3
-Order ID: LTJPD164142
+Order ID: LTJPW12329
 Phone Number: 918524927414
-Amount: 1,000.00
-Tax Fee: 55.0
-Time: 2026-02-07 21:53:02
+Amount: 4,000.00
+Tax Fee: 146.0
+Time: 2026-02-08 22:37:34
 
 Record #4
-Order ID: LTJPD164135
-Phone Number: 918524927414
-Amount: 1,000.00
-Tax Fee: 55.0
-Time: 2026-02-07 21:21:57
+Order ID: LTJPW12332
+Phone Number: 917051261412
+Amount: 604.00
+Tax Fee: 27.14
+Time: 2026-02-08 20:46:48
 
->> Total Amount for BOMBAYPAY: Rs 3,000.00
+Record #5
+Order ID: LTJPW12328
+Phone Number: 919328851453
+Amount: 1,120.00
+Tax Fee: 45.2
+Time: 2026-02-08 19:28:43
+
+Record #6
+Order ID: LTJPW12322
+Phone Number: 919328851453
+Amount: 2,040.00
+Tax Fee: 77.4
+Time: 2026-02-08 18:40:30
+
+Record #7
+Order ID: LTJPW12317
+Phone Number: 919893265544
+Amount: 500.00
+Tax Fee: 23.5
+Time: 2026-02-08 13:50:01
+
+Record #8
+Order ID: LTJPW12319
+Phone Number: 919467365943
+Amount: 2,000.00
+Tax Fee: 76.0
+Time: 2026-02-08 12:40:02
+
+Record #9
+Order ID: LTJPW12318
+Phone Number: 918879312757
+Amount: 700.00
+Tax Fee: 30.5
+Time: 2026-02-08 11:57:21
+
+>> Total Amount for TOPPAY: Rs 17,964.00
+
+==== OSPAY (3 records) | Total Amount: Rs 6,140.00 | Total Fee: Rs 202.20 ====
+
+Record #1
+Order ID: LTJPW12336
+Phone Number: 919106090184
+Amount: 600.00
+Tax Fee: 24.0
+Time: 2026-02-09 11:43:09
+
+Record #2
+Order ID: LTJPW12335
+Phone Number: 919144161029
+Amount: 540.00
+Tax Fee: 22.2
+Time: 2026-02-09 10:38:17
+
+Record #3
+Order ID: LTJPW12324
+Phone Number: 919572445108
+Amount: 5,000.00
+Tax Fee: 156.0
+Time: 2026-02-08 22:20:27
+
+>> Total Amount for OSPAY: Rs 6,140.00
+
+==== SKPAY (7 records) | Total Amount: Rs 22,310.00 | Total Fee: Rs 711.30 ====
+
+Record #1
+Order ID: LTJPW12334
+Phone Number: 918419800613
+Amount: 3,000.00
+Tax Fee: 96.0
+Time: 2026-02-09 13:13:14
+
+Record #2
+Order ID: LTJPW12326
+Phone Number: 919726244102
+Amount: 2,000.00
+Tax Fee: 66.0
+Time: 2026-02-09 11:10:36
+
+Record #3
+Order ID: LTJPW12323
+Phone Number: 919467365943
+Amount: 10,000.00
+Tax Fee: 306.0
+Time: 2026-02-08 22:28:18
+
+Record #4
+Order ID: LTJPW12333
+Phone Number: 919328851453
+Amount: 1,310.00
+Tax Fee: 45.3
+Time: 2026-02-08 22:24:50
+
+Record #5
+Order ID: LTJPW12321
+Phone Number: 918879312757
+Amount: 1,000.00
+Tax Fee: 36.0
+Time: 2026-02-08 15:42:33
+
+Record #6
+Order ID: LTJPW12320
+Phone Number: 919572445108
+Amount: 3,500.00
+Tax Fee: 111.0
+Time: 2026-02-08 13:46:54
+
+Record #7
+Order ID: LTJPW12316
+Phone Number: 918419800613
+Amount: 1,500.00
+Tax Fee: 51.0
+Time: 2026-02-08 01:14:57
+
+>> Total Amount for SKPAY: Rs 22,310.00
+
+==== YTPAY (3 records) | Total Amount: Rs 3,500.00 | Total Fee: Rs 123.00 ====
+
+Record #1
+Order ID: LTJPW12330
+Phone Number: 919632135596
+Amount: 1,500.00
+Tax Fee: 51.0
+Time: 2026-02-09 05:56:57
+
+Record #2
+Order ID: LTJPW12314
+Phone Number: -
+Amount: 1,000.00
+Tax Fee: 36.0
+Time: 2026-02-08 19:05:29
+
+Record #3
+Order ID: LTJPW12307
+Phone Number: 917976858425
+Amount: 1,000.00
+Tax Fee: 36.0
+Time: 2026-02-08 15:50:36
+
+>> Total Amount for YTPAY: Rs 3,500.00
+
+==== XYPAY (1 record) | Total Amount: Rs 1,100.00 | Total Fee: Rs 29.70 ====
+
+Record #1
+Order ID: LTJPW12325
+Phone Number: 918749062884
+Amount: 1,100.00
+Tax Fee: 29.7
+Time: 2026-02-09 02:30:14
+
+>> Total Amount for XYPAY: Rs 1,100.00
+
+==== CPUPAY (1 record) | Total Amount: Rs 1,800.00 | Total Fee: Rs 60.00 ====
+
+Record #1
+Order ID: LTJPW12313
+Phone Number: 919328851453
+Amount: 1,800.00
+Tax Fee: 60.0
+Time: 2026-02-08 13:33:11
+
+>> Total Amount for CPUPAY: Rs 1,800.00
 
 =========================== GRAND TOTAL for All Gateways ===========================
 
-  DEPOSITS Records: 147
+  DEPOSITS Records: 125
+  DEPOSITS Amount: 87,124.00
 
-==== pg SKPAY_02/08/2026 ====
+==== pg OSPAY_02/09/2026 ====
 
-  DEPOSITS Records: 75
-  DEPOSITS Amount: 52,000.00
+  DEPOSITS Records: 9
+  DEPOSITS Amount: 7,500.00
 
-(depo) pg SKPAY 02/08/2026 | Total Fee: Rs 2496.00
-==== pg YTPAY_02/08/2026 ====
+(depo) pg OSPAY 02/09/2026 | Total Fee: Rs 337.50
+==== pg SKPAY_02/09/2026 ====
 
-  DEPOSITS Records: 45
-  DEPOSITS Amount: 25,710.00
+  DEPOSITS Records: 58
+  DEPOSITS Amount: 43,800.00
 
-(depo) pg YTPAY 02/08/2026 | Total Fee: Rs 1542.60
-==== pg OSPAY_02/08/2026 ====
+(depo) pg SKPAY 02/09/2026 | Total Fee: Rs 2102.40
+==== pg YTPAY_02/09/2026 ====
 
-  DEPOSITS Records: 7
-  DEPOSITS Amount: 7,000.00
+  DEPOSITS Records: 41
+  DEPOSITS Amount: 23,824.00
 
-(depo) pg OSPAY 02/08/2026 | Total Fee: Rs 315.00
-==== pg TOPPAY_02/08/2026 ====
+(depo) pg YTPAY 02/09/2026 | Total Fee: Rs 1429.44
+==== pg TOPPAY_02/09/2026 ====
 
   DEPOSITS Records: 16
-  DEPOSITS Amount: 11,000.00
+  DEPOSITS Amount: 10,000.00
 
-(depo) pg TOPPAY 02/08/2026 | Total Fee: Rs 660.00
+(depo) pg TOPPAY 02/09/2026 | Total Fee: Rs 600.00
 ==== pg BOMBAYPAY_02/08/2026 ====
 
-  DEPOSITS Records: 4
-  DEPOSITS Amount: 3,000.00
+  DEPOSITS Records: 1
+  DEPOSITS Amount: 2,000.00
 
-(depo) pg BOMBAYPAY 02/08/2026 | Total Fee: Rs 165.00
+(depo) pg BOMBAYPAY 02/08/2026 | Total Fee: Rs 110.00
+
+  WITHDRAWALS Records: 24
+  WITHDRAWALS Amount: 52,814.00
+
+==== pg TOPPAY_02/09/2026 ====
+
+  WITHDRAWALS Records: 9
+  WITHDRAWALS Amount: 17,964.00
+
+(wd) pg TOPPAY 02/09/2026 | Total Fee: Rs 682.74
+==== pg OSPAY_02/09/2026 ====
+
+  WITHDRAWALS Records: 3
+  WITHDRAWALS Amount: 6,140.00
+
+(wd) pg OSPAY 02/09/2026 | Total Fee: Rs 202.20
+==== pg SKPAY_02/09/2026 ====
+
+  WITHDRAWALS Records: 7
+  WITHDRAWALS Amount: 22,310.00
+
+(wd) pg SKPAY 02/09/2026 | Total Fee: Rs 711.30
+==== pg YTPAY_02/09/2026 ====
+
+  WITHDRAWALS Records: 3
+  WITHDRAWALS Amount: 3,500.00
+
+(wd) pg YTPAY 02/09/2026 | Total Fee: Rs 123.00
+==== pg XYPAY_02/09/2026 ====
+
+  WITHDRAWALS Records: 1
+  WITHDRAWALS Amount: 1,100.00
+
+(wd) pg XYPAY 02/09/2026 | Total Fee: Rs 29.70
+==== pg CPUPAY_02/08/2026 ====
+
+  WITHDRAWALS Records: 1
+  WITHDRAWALS Amount: 1,800.00
+
+(wd) pg CPUPAY 02/08/2026 | Total Fee: Rs 60.00
+
+================================================================================
+  COMBINED Total Records: 149
+  COMBINED Total Amount: Rs 139,938.00
+================================================================================
