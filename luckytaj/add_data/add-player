@@ -263,15 +263,16 @@ def add_player_details(record):
 
     # ===== Phone Number =====
 
-    if record["Phone Number"] != "-":
-        number_id_input = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Phone Number']"))
-        )
-        number_id_input.clear()
-        number_id_input.send_keys(record["Phone Number"])
-        print(f"[INFO] Phone Number entered: {record['Phone Number']}")
-    else:
-        print("[INFO] Skipped Phone Number input (value was '-')")
+    phone_value = record["Phone Number"]
+    if phone_value == "-":
+        phone_value = record["Player ID"]
+        print(f"[INFO] Phone is '-', using Player ID '{phone_value}' instead")
+    number_id_input = WebDriverWait(driver, 20).until(
+        EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Phone Number']"))
+    )
+    number_id_input.clear()
+    number_id_input.send_keys(phone_value)
+    print(f"[INFO] Phone Number entered: {phone_value}")
 
 
     # ===== Email =====

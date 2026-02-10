@@ -455,16 +455,14 @@ def remove_bom(line):
     return line
 
 def get_start_by_transaction_id():
-    """Prompt user for last processed deposit and withdrawal IDs."""
+    """Prompt user for last processed deposit ID and withdrawal timestamp."""
     print("\n" + "="*60)
-    print("     TRANSACTION ID FILTER")
+    print("     TRANSACTION FILTER")
     print("="*60)
-    print("Enter the last processed transaction ID.")
-    print("Only transactions with a HIGHER numeric ID will be processed.")
     print("Press Enter to skip (process all).\n")
 
     deposit_id = input("Last deposit ID (e.g. LTJPD164443) or Enter to skip: ").strip()
-    withdrawal_id = input("Last withdrawal ID (e.g. LTJPW12324) or Enter to skip: ").strip()
+    withdrawal_ts = input("Last withdrawal timestamp (e.g. 2026-02-10 06:17:38) or Enter to skip: ").strip()
 
     deposit_cutoff = None
     withdrawal_cutoff = None
@@ -475,11 +473,12 @@ def get_start_by_transaction_id():
             deposit_cutoff = int(match.group(1))
             print(f"  → Will process deposits with ID > {deposit_cutoff}")
 
-    if withdrawal_id:
-        match = re.search(r'(\d+)$', withdrawal_id)
-        if match:
-            withdrawal_cutoff = int(match.group(1))
-            print(f"  → Will process withdrawals with ID > {withdrawal_cutoff}")
+    if withdrawal_ts:
+        try:
+            withdrawal_cutoff = datetime.strptime(withdrawal_ts, "%Y-%m-%d %H:%M:%S")
+            print(f"  → Will process withdrawals with timestamp > {withdrawal_cutoff}")
+        except ValueError:
+            print(f"  → Invalid timestamp format: '{withdrawal_ts}'. Processing ALL withdrawals.")
 
     if not deposit_cutoff and not withdrawal_cutoff:
         print("  → No filter set. Processing ALL transactions.")
@@ -965,7 +964,7 @@ def parse_and_execute(filename, deposit_cutoff=None, withdrawal_cutoff=None):
     last_withdrawal_id = None
 
     # Temporary variables for one record
-    order_id = phone = amount = time_str = None
+    order_id = player_id = phone = amount = time_str = None
     dt = hour_str = minute_str = None
 
     for raw_line in lines:
@@ -1019,8 +1018,13 @@ def parse_and_execute(filename, deposit_cutoff=None, withdrawal_cutoff=None):
         # Parse record fields
         if line.startswith("Order ID:"):
             order_id = line.split(":", 1)[1].strip()
+        elif line.startswith("Player ID:"):
+            player_id = line.split(":", 1)[1].strip()
         elif line.startswith("Phone Number:"):
             phone = line.split(":", 1)[1].strip()
+            if phone == "-" and player_id:
+                enhanced_print(f"[INFO] Phone is '-', using Player ID '{player_id}' instead")
+                phone = player_id
         elif line.startswith("Amount:"):
             amount = line.split(":", 1)[1].strip()
         elif line.startswith("Time:"):
@@ -1041,8 +1045,8 @@ def parse_and_execute(filename, deposit_cutoff=None, withdrawal_cutoff=None):
                             enhanced_print(f"[SKIP] Deposit {order_id} (ID {id_num} <= cutoff {deposit_cutoff})")
                             should_process = False
                     elif current_transaction_type == "WITHDRAWAL" and withdrawal_cutoff is not None:
-                        if id_num <= withdrawal_cutoff:
-                            enhanced_print(f"[SKIP] Withdrawal {order_id} (ID {id_num} <= cutoff {withdrawal_cutoff})")
+                        if dt <= withdrawal_cutoff:
+                            enhanced_print(f"[SKIP] Withdrawal {order_id} (time {dt} <= cutoff {withdrawal_cutoff})")
                             should_process = False
 
                     if should_process:
@@ -1060,10 +1064,10 @@ def parse_and_execute(filename, deposit_cutoff=None, withdrawal_cutoff=None):
                         if current_transaction_type == "DEPOSIT":
                             last_deposit_id = order_id
                         elif current_transaction_type == "WITHDRAWAL":
-                            last_withdrawal_id = order_id
+                            last_withdrawal_id = time_str
 
                     # Reset vars for next record
-                    order_id = phone = amount = time_str = None
+                    order_id = player_id = phone = amount = time_str = None
                     dt = hour_str = minute_str = None
             except ValueError:
                 enhanced_print(f"[ERROR] Invalid datetime: {time_str}")
@@ -1096,12 +1100,12 @@ driver.quit()
 last_ids_path = os.path.join(working_dir, "result", "last_transaction_ids.txt")
 summary = (
     "="*60 + "\n"
-    "       LAST PROCESSED TRANSACTION IDs\n"
+    "       LAST PROCESSED TRANSACTION CUTOFFS\n"
     + "="*60 + "\n"
-    + f"  Last Deposit ID:    {last_deposit_id if last_deposit_id else '(none processed)'}\n"
-    + f"  Last Withdrawal ID: {last_withdrawal_id if last_withdrawal_id else '(none processed)'}\n"
+    + f"  Last Deposit ID:          {last_deposit_id if last_deposit_id else '(none processed)'}\n"
+    + f"  Last Withdrawal Timestamp: {last_withdrawal_id if last_withdrawal_id else '(none processed)'}\n"
     + "="*60 + "\n"
-    + "  Use these IDs as cutoff next time you run the script.\n"
+    + "  Use these as cutoff next time you run the script.\n"
     + "="*60
 )
 print("\n" + summary + "\n")

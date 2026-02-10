@@ -549,6 +549,7 @@ def extract_transaction_data_with_date_filter(driver, start_date, end_date):
                 # Create record using sample_crawler column mapping
                 record = {
                     "Order ID": cols[0].text.strip(),
+                    "Player ID": cols[4].text.strip() if len(cols) > 4 else "",
                     "Phone Number": cols[5].text.strip(),
                     "Amount": amount,
                     "Tax Fee": tax_fee,
@@ -668,6 +669,7 @@ def extract_withdrawal_data_with_date_filter(driver, start_date, end_date):
 
                 record = {
                     "Order ID": cols[1].text.strip(),
+                    "Player ID": cols[7].text.strip() if len(cols) > 7 else "",
                     "Phone Number": cols[8].text.strip(),
                     "Amount": amount,
                     "Tax Fee": tax_fee,
@@ -740,6 +742,7 @@ def print_grouped_results(gateway_groups, section_type="DEPOSITS", file_mode="w"
                 entry = (
                     f"\nRecord #{i}\n"
                     f"Order ID: {record['Order ID']}\n"
+                    f"Player ID: {record.get('Player ID', '')}\n"
                     f"Phone Number: {record['Phone Number']}\n"
                     f"Amount: {record['Amount']:,.2f}\n"
                     f"Tax Fee: {record.get('Tax Fee', 0)}\n"

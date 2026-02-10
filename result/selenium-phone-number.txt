@@ -1,7 +1,5 @@
 
-==== All (28 records) ====
-#1 - Phone: 919828188426, Player ID: LTJ529EA, Email: -, Affiliate: Melody01
-#2 - Phone: 919603816253, Player ID: LTJ80FD9, Email: -, Affiliate: SEOAFF02
-#3 - Phone: 919429130032, Player ID: LTJ5E165, Email: -, Affiliate: youtubechannel
-#4 - Phone: 918869881724, Player ID: LTJ585F7, Email: -, Affiliate: -
-#5 - Phone: 917083127097, Player ID: LTJ58DDF, Email: -, Affiliate: fbads0001
+==== All (11 records) ====
+#1 - Phone: -, Player ID: LTJ948D8, Email: aqibparray97@gmail.com, Affiliate: SEOAFF02
+#2 - Phone: 918741021407, Player ID: LTJ225A5, Email: -, Affiliate: APK001
+
