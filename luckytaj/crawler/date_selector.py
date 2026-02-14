@@ -6,13 +6,13 @@ from prompt_toolkit import prompt
 
 class DateSelector:
     def __init__(self):
-        # Nepal timezone UTC+05:45
-        self.nepal_tz = timezone(timedelta(hours=5, minutes=45))
+        # India timezone UTC+05:30
+        self.india_tz = timezone(timedelta(hours=5, minutes=30))
         self.selected_dates = None
     
-    def get_nepal_time(self):
-        """Get current time in Nepal timezone"""
-        return datetime.now(self.nepal_tz)
+    def get_india_time(self):
+        """Get current time in India timezone"""
+        return datetime.now(self.india_tz)
     
     def format_date(self, date):
         """Format date as YYYY-MM-DD"""
@@ -20,10 +20,10 @@ class DateSelector:
     
     def get_default_dates(self):
         """Generate default start and end dates"""
-        nepal_now = self.get_nepal_time()
-        
+        india_now = self.get_india_time()
+
         # Both start date and end date are today
-        today_date = self.format_date(nepal_now)
+        today_date = self.format_date(india_now)
         
         return today_date, today_date
     
@@ -33,7 +33,7 @@ class DateSelector:
     
     def terminal_date_selection(self):
         """Terminal-based date selection with pre-filled editable defaults"""
-        print("\033[1;33m[INFO] Date Selection (Nepal Time UTC+05:45)\033[0m")
+        print("\033[1;33m[INFO] Date Selection (India Time UTC+05:30)\033[0m")
         
         default_start, default_end = self.get_default_dates()
         
@@ -66,14 +66,14 @@ class DateSelector:
                 print("\033[1;31m[ERROR] Start date must be before end date\033[0m")
                 return False
                 
-            # Check if dates are not in the future (Nepal time)
-            nepal_today = self.get_nepal_time().replace(hour=23, minute=59, second=59, microsecond=999999)
-            
-            if start_dt.replace(tzinfo=self.nepal_tz) > nepal_today:
+            # Check if dates are not in the future (India time)
+            india_today = self.get_india_time().replace(hour=23, minute=59, second=59, microsecond=999999)
+
+            if start_dt.replace(tzinfo=self.india_tz) > india_today:
                 print("\033[1;31m[ERROR] Start date cannot be in the future\033[0m")
                 return False
                 
-            if end_dt.replace(tzinfo=self.nepal_tz) > nepal_today:
+            if end_dt.replace(tzinfo=self.india_tz) > india_today:
                 print("\033[1;31m[ERROR] End date cannot be in the future\033[0m")
                 return False
             

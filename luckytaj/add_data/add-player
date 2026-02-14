@@ -252,27 +252,29 @@ def add_player_details(record):
     time.sleep(1)
 
     # ===== Player ID =====
+    # Use phone number first; if phone is "-", use Player ID instead
+    player_id_value = record["Phone Number"] if record["Phone Number"] != "-" else record["Player ID"]
+    if record["Phone Number"] == "-":
+        print(f"[INFO] Phone is '-', using Player ID '{player_id_value}' in Player ID field")
+    else:
+        print(f"[INFO] Using Phone '{player_id_value}' in Player ID field")
 
     player_id_input = WebDriverWait(driver, 20).until(
         EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Player ID']"))
     )
     player_id_input.clear()
-    player_id_input.send_keys(record["Player ID"])
-    print(f"[INFO] Player ID entered: {record['Player ID']}")
+    player_id_input.send_keys(player_id_value)
+    print(f"[INFO] Player ID field entered: {player_id_value}")
 
 
     # ===== Phone Number =====
-
-    phone_value = record["Phone Number"]
-    if phone_value == "-":
-        phone_value = record["Player ID"]
-        print(f"[INFO] Phone is '-', using Player ID '{phone_value}' instead")
+    # Use same value as Player ID field
     number_id_input = WebDriverWait(driver, 20).until(
         EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Phone Number']"))
     )
     number_id_input.clear()
-    number_id_input.send_keys(phone_value)
-    print(f"[INFO] Phone Number entered: {phone_value}")
+    number_id_input.send_keys(player_id_value)
+    print(f"[INFO] Phone Number entered: {player_id_value}")
 
 
     # ===== Email =====
@@ -299,27 +301,27 @@ def add_player_details(record):
         print("[INFO] Form submitted via Enter key")
     except Exception as e:
         print(f"[ERROR] Could not submit form with Enter key: {e}")
-    
-    # time.sleep(2)
 
+    # Keep pressing Enter until toast appears (max 45 seconds)
+    start_time = time.time()
+    toast_appeared = False
 
-    # Check for player ID toast after form submission
-    
-    if check_player_id_toast(driver):
-        print("\033[92m[APPROVED]\033[0m Player ID form done submitted")
-        
-        
-    else:
-        print("\033[91m[WARN]\033Player ID not added - form submission failed")
-        # Try pressing Enter up to 5 times with 2s interval
-        for attempt in range(5):
+    while (time.time() - start_time) < 45:
+        if check_player_id_toast(driver, timeout=1):
+            print("\033[92m[APPROVED]\033[0m Player ID form done submitted")
+            toast_appeared = True
+            break
+        else:
             try:
                 body = driver.find_element(By.TAG_NAME, "body")
                 body.send_keys(Keys.ENTER)
-                print(f"[INFO] Sent ENTER key to dismiss toast (attempt {attempt+1}/5)")
-                time.sleep(3)
+                print(f"[INFO] Pressing ENTER (elapsed: {int(time.time() - start_time)}s)")
+                time.sleep(0.5)
             except Exception as e:
                 print(f"[ERROR] Could not send ENTER key: {e}")
+
+    if not toast_appeared:
+        print("\033[91m[WARN]\033[0m Player ID toast did not appear after 45 seconds")
     
 
 

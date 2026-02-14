@@ -254,7 +254,7 @@ def check_player_id_toast(driver, timeout=10):
     except TimeoutException:
         return False
     
-def check_transaction_complete_toast(driver, timeout=30):
+def check_transaction_complete_toast(driver, timeout=45):
     """
     Waits up to `timeout` seconds to see if the 'Transaction added successfully.' toast appears.
     If toast doesn't appear, presses Enter every 1 second until found or timeout.
@@ -455,34 +455,38 @@ def remove_bom(line):
     return line
 
 def get_start_by_transaction_id():
-    """Prompt user for last processed deposit ID and withdrawal timestamp."""
+    """Prompt user for last processed deposit and withdrawal timestamps."""
     print("\n" + "="*60)
     print("     TRANSACTION FILTER")
     print("="*60)
-    print("Press Enter to skip (process all).\n")
+    print("Enter last processed transaction to resume from that point.")
+    print("Press Enter to process ALL transactions.\n")
 
-    deposit_id = input("Last deposit ID (e.g. LTJPD164443) or Enter to skip: ").strip()
-    withdrawal_ts = input("Last withdrawal timestamp (e.g. 2026-02-10 06:17:38) or Enter to skip: ").strip()
+    deposit_ts = input("Last deposit timestamp (e.g. 2026-02-13 19:56:54) or Enter to process ALL deposits: ").strip()
+    withdrawal_ts = input("Last withdrawal timestamp (e.g. 2026-02-10 06:17:38) or Enter to process ALL withdrawals: ").strip()
 
     deposit_cutoff = None
     withdrawal_cutoff = None
 
-    if deposit_id:
-        match = re.search(r'(\d+)$', deposit_id)
-        if match:
-            deposit_cutoff = int(match.group(1))
-            print(f"  → Will process deposits with ID > {deposit_cutoff}")
+    if deposit_ts:
+        try:
+            deposit_cutoff = datetime.strptime(deposit_ts, "%Y-%m-%d %H:%M:%S")
+            print(f"  ✓ Will process deposits with timestamp > {deposit_cutoff}")
+        except ValueError:
+            print(f"  ✗ Invalid timestamp format. Processing ALL deposits.")
+    else:
+        print(f"  ✓ Processing ALL deposits")
 
     if withdrawal_ts:
         try:
             withdrawal_cutoff = datetime.strptime(withdrawal_ts, "%Y-%m-%d %H:%M:%S")
-            print(f"  → Will process withdrawals with timestamp > {withdrawal_cutoff}")
+            print(f"  ✓ Will process withdrawals with timestamp > {withdrawal_cutoff}")
         except ValueError:
-            print(f"  → Invalid timestamp format: '{withdrawal_ts}'. Processing ALL withdrawals.")
+            print(f"  ✗ Invalid timestamp format. Processing ALL withdrawals.")
+    else:
+        print(f"  ✓ Processing ALL withdrawals")
 
-    if not deposit_cutoff and not withdrawal_cutoff:
-        print("  → No filter set. Processing ALL transactions.")
-
+    print()  # Add blank line for readability
     return deposit_cutoff, withdrawal_cutoff
 
 # Select website configuration
@@ -959,9 +963,13 @@ def parse_and_execute(filename, deposit_cutoff=None, withdrawal_cutoff=None):
         "MAINPAY", "TOPPAY", "crypto"
     }
 
-    # Track last processed Order IDs
+    # Track last processed Order IDs and totals
     last_deposit_id = None
     last_withdrawal_id = None
+    deposit_count = 0
+    deposit_total = 0.0
+    withdrawal_count = 0
+    withdrawal_total = 0.0
 
     # Temporary variables for one record
     order_id = player_id = phone = amount = time_str = None
@@ -976,12 +984,14 @@ def parse_and_execute(filename, deposit_cutoff=None, withdrawal_cutoff=None):
         # Detect WITHDRAWALS section banner
         if line == "WITHDRAWALS":
             current_transaction_type = "WITHDRAWAL"
+            performed_gateways.clear()  # Reset gateway tracking for new section
             enhanced_print(f"[INFO] Detected WITHDRAWALS section - switching to withdrawal mode")
             continue
 
         # Detect DEPOSITS section banner
         if line == "DEPOSITS":
             current_transaction_type = "DEPOSIT"
+            performed_gateways.clear()  # Reset gateway tracking for new section
             enhanced_print(f"[INFO] Detected DEPOSITS section - switching to deposit mode")
             continue
 
@@ -994,8 +1004,23 @@ def parse_and_execute(filename, deposit_cutoff=None, withdrawal_cutoff=None):
         if line.startswith("====") and "Total Amount" in line:
             if current_records:
                 enhanced_print(f"[DEBUG] Flushing {len(current_records)} records under gateway '{current_gateway}'")
+                # Sort records by timestamp (oldest first) for both deposits and withdrawals
+                if current_transaction_type == "DEPOSIT":
+                    current_records.sort(key=lambda r: r['Datetime'])
+                    enhanced_print(f"[DEBUG] Sorted deposits by timestamp (oldest first)")
+                elif current_transaction_type == "WITHDRAWAL":
+                    current_records.sort(key=lambda r: r['Datetime'])
+                    enhanced_print(f"[DEBUG] Sorted withdrawals by timestamp (oldest first)")
                 for record in current_records:
                     add_transaction_details(record)
+                    # Track totals
+                    amount_val = float(record['Amount'].replace(',', '')) if isinstance(record['Amount'], str) else float(record['Amount'])
+                    if record['transaction_type'] == "DEPOSIT":
+                        deposit_count += 1
+                        deposit_total += amount_val
+                    elif record['transaction_type'] == "WITHDRAWAL":
+                        withdrawal_count += 1
+                        withdrawal_total += amount_val
             current_records = []
 
             match = re.match(r"==== (.*?) \(", line)
@@ -1035,14 +1060,12 @@ def parse_and_execute(filename, deposit_cutoff=None, withdrawal_cutoff=None):
                 minute_str = f"{dt.minute:02d}"
 
                 if all([order_id, phone, amount, time_str]):
-                    # ID-based filtering
+                    # Timestamp-based filtering for both deposits and withdrawals
                     should_process = True
-                    id_match = re.search(r'(\d+)$', order_id)
-                    id_num = int(id_match.group(1)) if id_match else 0
 
                     if current_transaction_type == "DEPOSIT" and deposit_cutoff is not None:
-                        if id_num <= deposit_cutoff:
-                            enhanced_print(f"[SKIP] Deposit {order_id} (ID {id_num} <= cutoff {deposit_cutoff})")
+                        if dt <= deposit_cutoff:
+                            enhanced_print(f"[SKIP] Deposit {order_id} (time {dt} <= cutoff {deposit_cutoff})")
                             should_process = False
                     elif current_transaction_type == "WITHDRAWAL" and withdrawal_cutoff is not None:
                         if dt <= withdrawal_cutoff:
@@ -1050,7 +1073,7 @@ def parse_and_execute(filename, deposit_cutoff=None, withdrawal_cutoff=None):
                             should_process = False
 
                     if should_process:
-                        enhanced_print(f"[PROCESS] {current_transaction_type} {order_id} (ID {id_num})")
+                        enhanced_print(f"[PROCESS] {current_transaction_type} {order_id} (time {dt})")
                         current_records.append({
                             "Order ID": order_id,
                             "Phone Number": phone,
@@ -1062,7 +1085,7 @@ def parse_and_execute(filename, deposit_cutoff=None, withdrawal_cutoff=None):
                             "transaction_type": current_transaction_type
                         })
                         if current_transaction_type == "DEPOSIT":
-                            last_deposit_id = order_id
+                            last_deposit_id = time_str
                         elif current_transaction_type == "WITHDRAWAL":
                             last_withdrawal_id = time_str
 
@@ -1076,10 +1099,25 @@ def parse_and_execute(filename, deposit_cutoff=None, withdrawal_cutoff=None):
     # Final flush at EOF
     if current_records:
         enhanced_print(f"[DEBUG] Final flush: {len(current_records)} records under gateway '{current_gateway}'")
+        # Sort records by timestamp (oldest first) for both deposits and withdrawals
+        if current_transaction_type == "DEPOSIT":
+            current_records.sort(key=lambda r: r['Datetime'])
+            enhanced_print(f"[DEBUG] Sorted deposits by timestamp (oldest first)")
+        elif current_transaction_type == "WITHDRAWAL":
+            current_records.sort(key=lambda r: r['Datetime'])
+            enhanced_print(f"[DEBUG] Sorted withdrawals by timestamp (oldest first)")
         for record in current_records:
             add_transaction_details(record)
+            # Track totals
+            amount_val = float(record['Amount'].replace(',', '')) if isinstance(record['Amount'], str) else float(record['Amount'])
+            if record['transaction_type'] == "DEPOSIT":
+                deposit_count += 1
+                deposit_total += amount_val
+            elif record['transaction_type'] == "WITHDRAWAL":
+                withdrawal_count += 1
+                withdrawal_total += amount_val
 
-    return last_deposit_id, last_withdrawal_id
+    return last_deposit_id, last_withdrawal_id, deposit_count, deposit_total, withdrawal_count, withdrawal_total
 
 
 # ===== Function call HERE =====
@@ -1090,8 +1128,65 @@ working_dir = os.path.dirname(os.path.dirname(script_dir))
 transaction_file_path = os.path.join(working_dir, "result", "selenium-transaction_history.txt")
 
 enhanced_print("Starting transaction processing from file...")
-last_deposit_id, last_withdrawal_id = parse_and_execute(transaction_file_path, deposit_cutoff, withdrawal_cutoff)
+last_deposit_id, last_withdrawal_id, deposit_count, deposit_total, withdrawal_count, withdrawal_total = parse_and_execute(transaction_file_path, deposit_cutoff, withdrawal_cutoff)
 enhanced_print("All transactions processed successfully!")
+
+# Parse and display crawled data summary from file
+def parse_crawled_summary(filepath):
+    """Parse the grand total section from the crawled data file."""
+    crawled_deposit_count = 0
+    crawled_deposit_amount = 0.0
+    crawled_withdrawal_count = 0
+    crawled_withdrawal_amount = 0.0
+
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+
+        # Read from the end to find the final summary section
+        # Look for lines that contain "DEPOSITS Total Records:" after the last "===="
+        for i in range(len(lines) - 1, -1, -1):
+            line = lines[i].strip()
+
+            if "DEPOSITS Total Records:" in line:
+                crawled_deposit_count = int(line.split(":")[-1].strip())
+            elif "DEPOSITS Total Amount:" in line:
+                amount_str = line.split("Rs")[-1].strip().replace(",", "")
+                crawled_deposit_amount = float(amount_str)
+            elif "WITHDRAWALS Total Records:" in line:
+                crawled_withdrawal_count = int(line.split(":")[-1].strip())
+            elif "WITHDRAWALS Total Amount:" in line:
+                amount_str = line.split("Rs")[-1].strip().replace(",", "")
+                crawled_withdrawal_amount = float(amount_str)
+
+            # Stop when we've found all four values (or reached GRAND TOTAL section start)
+            if crawled_deposit_count > 0 and crawled_deposit_amount > 0:
+                if crawled_withdrawal_count > 0 or "GRAND TOTAL" in line:
+                    break
+
+    except Exception as e:
+        enhanced_print(f"[WARNING] Could not parse crawled summary: {e}")
+
+    return crawled_deposit_count, crawled_deposit_amount, crawled_withdrawal_count, crawled_withdrawal_amount
+
+# Get crawled data summary
+crawled_dep_count, crawled_dep_amount, crawled_wd_count, crawled_wd_amount = parse_crawled_summary(transaction_file_path)
+
+# Print crawled data summary (not added data)
+combined_count = crawled_dep_count + crawled_wd_count
+combined_total = crawled_dep_amount + crawled_wd_amount
+
+print("\n" + "="*80)
+print(f"  DEPOSITS Total Records: {crawled_dep_count}")
+print(f"  DEPOSITS Total Amount: Rs {crawled_dep_amount:,.2f}")
+print("="*80)
+print(f"  WITHDRAWALS Total Records: {crawled_wd_count}")
+print(f"  WITHDRAWALS Total Amount: Rs {crawled_wd_amount:,.2f}")
+print("="*80)
+print(f"  COMBINED Total Records: {combined_count}")
+print(f"  COMBINED Total Amount: Rs {combined_total:,.2f}")
+print("="*80 + "\n")
+
 enhanced_print("Automation completed. Closing browser...")
 time.sleep(2)
 driver.quit()
@@ -1102,7 +1197,7 @@ summary = (
     "="*60 + "\n"
     "       LAST PROCESSED TRANSACTION CUTOFFS\n"
     + "="*60 + "\n"
-    + f"  Last Deposit ID:          {last_deposit_id if last_deposit_id else '(none processed)'}\n"
+    + f"  Last Deposit Timestamp:    {last_deposit_id if last_deposit_id else '(none processed)'}\n"
     + f"  Last Withdrawal Timestamp: {last_withdrawal_id if last_withdrawal_id else '(none processed)'}\n"
     + "="*60 + "\n"
     + "  Use these as cutoff next time you run the script.\n"
@@ -1111,6 +1206,11 @@ summary = (
 print("\n" + summary + "\n")
 with open(last_ids_path, "w", encoding="utf-8") as f:
     f.write(summary + "\n")
+
+# Also append to gateway_config_log.txt
+gateway_log_path = os.path.join(working_dir, "result", "gateway_config_log.txt")
+with open(gateway_log_path, "a", encoding="utf-8") as f:
+    f.write("\n" + summary + "\n")
 
 # Cleanup
 try:

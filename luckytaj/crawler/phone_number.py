@@ -376,7 +376,7 @@ def extract_phone_data(driver, wait_timeout=20):
                 continue
 
             # Extract data using correct column mapping
-            player_id = cols[4].text.strip() if len(cols) > 4 else ""
+            player_id = cols[1].text.strip() if len(cols) > 1 else ""
             phone_number = cols[12].text.strip() if len(cols) > 12 else ""
             email = cols[14].text.strip() if len(cols) > 14 else ""
             affiliate_code = cols[5].text.strip() if len(cols) > 5 else ""

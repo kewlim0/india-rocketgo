@@ -834,16 +834,24 @@ def write_grand_total(deposit_groups, withdrawal_groups):
                 print(f"\033[95m{gateway_tax_line}\033[0m")
                 f.write(gateway_tax_line)
 
-        # Combined totals
-        combined_amount = deposit_amount + (sum(sum(r["Amount"] for r in records) for records in withdrawal_groups.values()) if withdrawal_groups else 0)
-        combined_records = deposit_records + (sum(len(records) for records in withdrawal_groups.values()) if withdrawal_groups else 0)
+        # Separate deposit and withdrawal totals
+        withdrawal_records = sum(len(records) for records in withdrawal_groups.values()) if withdrawal_groups else 0
+        withdrawal_amount = sum(sum(r["Amount"] for r in records) for records in withdrawal_groups.values()) if withdrawal_groups else 0
+
         f.write(f"\n{'='*80}\n")
-        f.write(f"  COMBINED Total Records: {combined_records}\n")
-        f.write(f"  COMBINED Total Amount: Rs {combined_amount:,.2f}\n")
+        f.write(f"  DEPOSITS Total Records: {deposit_records}\n")
+        f.write(f"  DEPOSITS Total Amount: Rs {deposit_amount:,.2f}\n")
+        if withdrawal_groups:
+            f.write(f"\n  WITHDRAWALS Total Records: {withdrawal_records}\n")
+            f.write(f"  WITHDRAWALS Total Amount: Rs {withdrawal_amount:,.2f}\n")
         f.write(f"{'='*80}\n")
+
         print(f"\033[92m{'='*80}\033[0m")
-        print(f"\033[92m  COMBINED Total Records: {combined_records}\033[0m")
-        print(f"\033[92m  COMBINED Total Amount: Rs {combined_amount:,.2f}\033[0m")
+        print(f"\033[92m  DEPOSITS Records: {deposit_records}\033[0m")
+        print(f"\033[92m  DEPOSITS Amount: Rs {deposit_amount:,.2f}\033[0m")
+        if withdrawal_groups:
+            print(f"\033[92m\n  WITHDRAWALS Records: {withdrawal_records}\033[0m")
+            print(f"\033[92m  WITHDRAWALS Amount: Rs {withdrawal_amount:,.2f}\033[0m")
         print(f"\033[92m{'='*80}\033[0m")
 
 
@@ -1020,7 +1028,10 @@ def run_optimized_transaction_extraction(driver, start_date, end_date, mode="dep
     gateway_groups = defaultdict(list)
     for record in all_collected_records:
         gateway_groups[record["Gateway"]].append(record)
-    
+
+    # Calculate total amount
+    total_amount = sum(record["Amount"] for record in all_collected_records)
+
     # Print summary
     total_records = len(all_collected_records)
     print(f"\033[92m[SUMMARY] Extraction completed:\033[0m")
@@ -1028,6 +1039,8 @@ def run_optimized_transaction_extraction(driver, start_date, end_date, mode="dep
     print(f"  - Total records collected: {total_records}")
     print(f"  - Unique gateways: {len(gateway_groups)}")
     print(f"  - Duplicates skipped: {duplicate_count}")
+    print(f"  - {label.capitalize()} count: {total_records}")
+    print(f"  - {label.capitalize()} amount: Rs {total_amount:,.2f}")
     
     if total_records == 0:
         print("\033[93m[WARNING] No records found in the specified date range.\033[0m")
