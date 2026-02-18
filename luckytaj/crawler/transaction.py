@@ -755,104 +755,60 @@ def print_grouped_results(gateway_groups, section_type="DEPOSITS", file_mode="w"
             print(f"\033[93m{footer}\033[0m")
             f.write(footer)
 
+def _build_table(title, groups):
+    """Build a formatted table for a section (deposits or withdrawals)."""
+    rows = []
+    for gateway, records in groups.items():
+        amount = sum(r["Amount"] for r in records)
+        fee = round(sum(float(r.get("Tax Fee", 0)) for r in records), 2)
+        rows.append((gateway, len(records), amount, fee))
+
+    total_records = sum(r[1] for r in rows)
+    total_amount = sum(r[2] for r in rows)
+    total_fee = round(sum(r[3] for r in rows), 2)
+
+    # Column widths
+    gw_w = max(len(title), max((len(r[0]) for r in rows), default=7), 7)
+    rec_w = max(7, len(f"{total_records:,}"))
+    amt_w = max(12, len(f"Rs {total_amount:,.2f}"))
+    fee_w = max(12, len(f"Rs {total_fee:,.2f}"))
+
+    top    = f"+-{'-'*gw_w}-+-{'-'*rec_w}-+-{'-'*amt_w}-+-{'-'*fee_w}-+"
+    mid    = f"+-{'-'*gw_w}-+-{'-'*rec_w}-+-{'-'*amt_w}-+-{'-'*fee_w}-+"
+    bottom = f"+-{'-'*gw_w}-+-{'-'*rec_w}-+-{'-'*amt_w}-+-{'-'*fee_w}-+"
+    header = f"| {title:<{gw_w}} | {'Records':>{rec_w}} | {'Amount':>{amt_w}} | {'Fee':>{fee_w}} |"
+
+    lines = [top, header, mid]
+    for gw, cnt, amt, fee in rows:
+        lines.append(f"| {gw:<{gw_w}} | {cnt:>{rec_w},} | {'Rs ' + f'{amt:,.2f}':>{amt_w}} | {'Rs ' + f'{fee:,.2f}':>{fee_w}} |")
+    lines.append(mid)
+    lines.append(f"| {'TOTAL':<{gw_w}} | {total_records:>{rec_w},} | {'Rs ' + f'{total_amount:,.2f}':>{amt_w}} | {'Rs ' + f'{total_fee:,.2f}':>{fee_w}} |")
+    lines.append(bottom)
+
+    return "\n".join(lines), total_records, total_amount, total_fee
+
+
 def write_grand_total(deposit_groups, withdrawal_groups):
     """Write combined grand total for deposits and withdrawals to output file."""
     output_file = get_output_file_path()
 
     with open(output_file, "a", encoding="utf-8") as f:
         f.write("\n")
-        grand_total_header = "=========================== GRAND TOTAL for All Gateways ===========================\n\n"
+        grand_total_header = "=========================== GRAND TOTAL ===========================\n"
         print(f"\033[92m{grand_total_header}\033[0m", end="")
         f.write(grand_total_header)
 
-        # Deposit summary
-        deposit_records = sum(len(records) for records in deposit_groups.values()) if deposit_groups else 0
-        deposit_amount = sum(sum(r["Amount"] for r in records) for records in deposit_groups.values()) if deposit_groups else 0
-
-        print(f"\033[95m  DEPOSITS Records: \033[92m{deposit_records}\033[95m\n\033[0m", end="")
-        f.write(f"  DEPOSITS Records: {deposit_records}\n")
-        print(f"\033[95m  DEPOSITS Amount: \033[92m{deposit_amount:,.2f}\033[95m\n\n\033[0m", end="")
-        f.write(f"  DEPOSITS Amount: {deposit_amount:,.2f}\n\n")
-
-        # Per-gateway deposit summary
+        # Deposit table
         if deposit_groups:
-            for gateway, records in deposit_groups.items():
-                gateway_amount = sum(r["Amount"] for r in records)
-                total_tax_amount = round(sum(float(r.get("Tax Fee", 0)) for r in records), 2)
-                try:
-                    if records[0]["Time"] and records[0]["Time"].strip():
-                        transaction_date = datetime.strptime(records[0]["Time"], "%Y-%m-%d %H:%M:%S").strftime("%m/%d/%Y")
-                    else:
-                        transaction_date = "Unknown"
-                except (ValueError, IndexError):
-                    transaction_date = "Unknown"
+            table, _, _, _ = _build_table("DEPOSITS", deposit_groups)
+            print(f"\033[95m{table}\033[0m")
+            f.write(table + "\n")
 
-                gateway_header = f"==== pg {gateway}_{transaction_date} ====\n\n"
-                print(f"\033[92m{gateway_header}\033[0m", end="")
-                f.write(gateway_header)
-
-                print(f"\033[95m  DEPOSITS Records: \033[92m{len(records)}\033[95m\n\033[0m", end="")
-                print(f"\033[95m  DEPOSITS Amount: \033[92m{gateway_amount:,.2f}\033[95m\n\n\033[0m", end="")
-                f.write(f"  DEPOSITS Records: {len(records)}\n")
-                f.write(f"  DEPOSITS Amount: {gateway_amount:,.2f}\n\n")
-
-                gateway_tax_line = f"(depo) pg {gateway} {transaction_date} | Total Fee: Rs {total_tax_amount:.2f}\n"
-                print(f"\033[95m{gateway_tax_line}\033[0m")
-                f.write(gateway_tax_line)
-
-        # Withdrawal summary
+        # Withdrawal table
         if withdrawal_groups:
-            withdrawal_records = sum(len(records) for records in withdrawal_groups.values())
-            withdrawal_amount = sum(sum(r["Amount"] for r in records) for records in withdrawal_groups.values())
-
-            print(f"\033[95m  WITHDRAWALS Records: \033[92m{withdrawal_records}\033[95m\n\033[0m", end="")
-            f.write(f"\n  WITHDRAWALS Records: {withdrawal_records}\n")
-            print(f"\033[95m  WITHDRAWALS Amount: \033[92m{withdrawal_amount:,.2f}\033[95m\n\n\033[0m", end="")
-            f.write(f"  WITHDRAWALS Amount: {withdrawal_amount:,.2f}\n\n")
-
-            for gateway, records in withdrawal_groups.items():
-                gateway_amount = sum(r["Amount"] for r in records)
-                total_tax_amount = round(sum(float(r.get("Tax Fee", 0)) for r in records), 2)
-                try:
-                    if records[0]["Time"] and records[0]["Time"].strip():
-                        transaction_date = datetime.strptime(records[0]["Time"], "%Y-%m-%d %H:%M:%S").strftime("%m/%d/%Y")
-                    else:
-                        transaction_date = "Unknown"
-                except (ValueError, IndexError):
-                    transaction_date = "Unknown"
-
-                gateway_header = f"==== pg {gateway}_{transaction_date} ====\n\n"
-                print(f"\033[92m{gateway_header}\033[0m", end="")
-                f.write(gateway_header)
-
-                print(f"\033[95m  WITHDRAWALS Records: \033[92m{len(records)}\033[95m\n\033[0m", end="")
-                print(f"\033[95m  WITHDRAWALS Amount: \033[92m{gateway_amount:,.2f}\033[95m\n\n\033[0m", end="")
-                f.write(f"  WITHDRAWALS Records: {len(records)}\n")
-                f.write(f"  WITHDRAWALS Amount: {gateway_amount:,.2f}\n\n")
-
-                gateway_tax_line = f"(wd) pg {gateway} {transaction_date} | Total Fee: Rs {total_tax_amount:.2f}\n"
-                print(f"\033[95m{gateway_tax_line}\033[0m")
-                f.write(gateway_tax_line)
-
-        # Separate deposit and withdrawal totals
-        withdrawal_records = sum(len(records) for records in withdrawal_groups.values()) if withdrawal_groups else 0
-        withdrawal_amount = sum(sum(r["Amount"] for r in records) for records in withdrawal_groups.values()) if withdrawal_groups else 0
-
-        f.write(f"\n{'='*80}\n")
-        f.write(f"  DEPOSITS Total Records: {deposit_records}\n")
-        f.write(f"  DEPOSITS Total Amount: Rs {deposit_amount:,.2f}\n")
-        if withdrawal_groups:
-            f.write(f"\n  WITHDRAWALS Total Records: {withdrawal_records}\n")
-            f.write(f"  WITHDRAWALS Total Amount: Rs {withdrawal_amount:,.2f}\n")
-        f.write(f"{'='*80}\n")
-
-        print(f"\033[92m{'='*80}\033[0m")
-        print(f"\033[92m  DEPOSITS Records: {deposit_records}\033[0m")
-        print(f"\033[92m  DEPOSITS Amount: Rs {deposit_amount:,.2f}\033[0m")
-        if withdrawal_groups:
-            print(f"\033[92m\n  WITHDRAWALS Records: {withdrawal_records}\033[0m")
-            print(f"\033[92m  WITHDRAWALS Amount: Rs {withdrawal_amount:,.2f}\033[0m")
-        print(f"\033[92m{'='*80}\033[0m")
+            table, _, _, _ = _build_table("WITHDRAWALS", withdrawal_groups)
+            print(f"\n\033[95m{table}\033[0m")
+            f.write("\n" + table + "\n")
 
 
 

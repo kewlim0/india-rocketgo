@@ -460,15 +460,21 @@ def get_start_by_transaction_id():
     print("     TRANSACTION FILTER")
     print("="*60)
     print("Enter last processed transaction to resume from that point.")
-    print("Press Enter to process ALL transactions.\n")
+    print("Press Enter to process ALL transactions.")
+    print("Type 'skip' to skip deposits or withdrawals entirely.\n")
 
-    deposit_ts = input("Last deposit timestamp (e.g. 2026-02-13 19:56:54) or Enter to process ALL deposits: ").strip()
-    withdrawal_ts = input("Last withdrawal timestamp (e.g. 2026-02-10 06:17:38) or Enter to process ALL withdrawals: ").strip()
+    deposit_ts = input("Last deposit timestamp (e.g. 2026-02-13 19:56:54) or Enter=ALL / skip: ").strip()
+    withdrawal_ts = input("Last withdrawal timestamp (e.g. 2026-02-10 06:17:38) or Enter=ALL / skip: ").strip()
 
     deposit_cutoff = None
     withdrawal_cutoff = None
+    skip_deposits = False
+    skip_withdrawals = False
 
-    if deposit_ts:
+    if deposit_ts.lower() == "skip":
+        skip_deposits = True
+        print(f"  ✓ Skipping ALL deposits")
+    elif deposit_ts:
         try:
             deposit_cutoff = datetime.strptime(deposit_ts, "%Y-%m-%d %H:%M:%S")
             print(f"  ✓ Will process deposits with timestamp > {deposit_cutoff}")
@@ -477,7 +483,10 @@ def get_start_by_transaction_id():
     else:
         print(f"  ✓ Processing ALL deposits")
 
-    if withdrawal_ts:
+    if withdrawal_ts.lower() == "skip":
+        skip_withdrawals = True
+        print(f"  ✓ Skipping ALL withdrawals")
+    elif withdrawal_ts:
         try:
             withdrawal_cutoff = datetime.strptime(withdrawal_ts, "%Y-%m-%d %H:%M:%S")
             print(f"  ✓ Will process withdrawals with timestamp > {withdrawal_cutoff}")
@@ -486,15 +495,15 @@ def get_start_by_transaction_id():
     else:
         print(f"  ✓ Processing ALL withdrawals")
 
-    print()  # Add blank line for readability
-    return deposit_cutoff, withdrawal_cutoff
+    print()
+    return deposit_cutoff, withdrawal_cutoff, skip_deposits, skip_withdrawals
 
 # Select website configuration
 config = select_website()
 enhanced_print(f"Selected website: {config['name']}")
 
-# Get transaction ID filter configuration
-deposit_cutoff, withdrawal_cutoff = get_start_by_transaction_id()
+# Get transaction filter configuration
+deposit_cutoff, withdrawal_cutoff, skip_deposits, skip_withdrawals = get_start_by_transaction_id()
 
 # ======== Setup the driver with error handling ========
 try:
@@ -766,6 +775,7 @@ def add_transaction_details(record):
         out_radio = wait.until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[type="radio"][value="out"]'))
         )
+        time.sleep(0.5)
         smart_click(out_radio)
         enhanced_print("[INFO] Successfully clicked 'out' radio button")
 
@@ -947,7 +957,7 @@ def add_transaction_details(record):
 
 
 
-def parse_and_execute(filename, deposit_cutoff=None, withdrawal_cutoff=None):
+def parse_and_execute(filename, deposit_cutoff=None, withdrawal_cutoff=None, skip_deposits=False, skip_withdrawals=False):
     with open(filename, 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
@@ -985,14 +995,26 @@ def parse_and_execute(filename, deposit_cutoff=None, withdrawal_cutoff=None):
         if line == "WITHDRAWALS":
             current_transaction_type = "WITHDRAWAL"
             performed_gateways.clear()  # Reset gateway tracking for new section
-            enhanced_print(f"[INFO] Detected WITHDRAWALS section - switching to withdrawal mode")
+            if skip_withdrawals:
+                enhanced_print(f"[INFO] Detected WITHDRAWALS section - SKIPPING (user chose to skip)")
+            else:
+                enhanced_print(f"[INFO] Detected WITHDRAWALS section - switching to withdrawal mode")
             continue
 
         # Detect DEPOSITS section banner
         if line == "DEPOSITS":
             current_transaction_type = "DEPOSIT"
             performed_gateways.clear()  # Reset gateway tracking for new section
-            enhanced_print(f"[INFO] Detected DEPOSITS section - switching to deposit mode")
+            if skip_deposits:
+                enhanced_print(f"[INFO] Detected DEPOSITS section - SKIPPING (user chose to skip)")
+            else:
+                enhanced_print(f"[INFO] Detected DEPOSITS section - switching to deposit mode")
+            continue
+
+        # Skip entire section if user chose to skip
+        if current_transaction_type == "DEPOSIT" and skip_deposits:
+            continue
+        if current_transaction_type == "WITHDRAWAL" and skip_withdrawals:
             continue
 
         # Stop condition
@@ -1085,9 +1107,11 @@ def parse_and_execute(filename, deposit_cutoff=None, withdrawal_cutoff=None):
                             "transaction_type": current_transaction_type
                         })
                         if current_transaction_type == "DEPOSIT":
-                            last_deposit_id = time_str
+                            if last_deposit_id is None or time_str > last_deposit_id:
+                                last_deposit_id = time_str
                         elif current_transaction_type == "WITHDRAWAL":
-                            last_withdrawal_id = time_str
+                            if last_withdrawal_id is None or time_str > last_withdrawal_id:
+                                last_withdrawal_id = time_str
 
                     # Reset vars for next record
                     order_id = player_id = phone = amount = time_str = None
@@ -1128,7 +1152,7 @@ working_dir = os.path.dirname(os.path.dirname(script_dir))
 transaction_file_path = os.path.join(working_dir, "result", "selenium-transaction_history.txt")
 
 enhanced_print("Starting transaction processing from file...")
-last_deposit_id, last_withdrawal_id, deposit_count, deposit_total, withdrawal_count, withdrawal_total = parse_and_execute(transaction_file_path, deposit_cutoff, withdrawal_cutoff)
+last_deposit_id, last_withdrawal_id, deposit_count, deposit_total, withdrawal_count, withdrawal_total = parse_and_execute(transaction_file_path, deposit_cutoff, withdrawal_cutoff, skip_deposits, skip_withdrawals)
 enhanced_print("All transactions processed successfully!")
 
 # Parse and display crawled data summary from file

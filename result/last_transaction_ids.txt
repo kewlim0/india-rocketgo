@@ -1,8 +1,8 @@
 ============================================================
        LAST PROCESSED TRANSACTION CUTOFFS
 ============================================================
-  Last Deposit ID:          LTJPD165544
-  Last Withdrawal Timestamp: 2026-02-13 10:13:17
+  Last Deposit Timestamp:    2026-02-18 19:38:17
+  Last Withdrawal Timestamp: 2026-02-18 17:42:47
 ============================================================
   Use these as cutoff next time you run the script.
 ============================================================

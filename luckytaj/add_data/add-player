@@ -180,7 +180,7 @@ except TimeoutException:
 
 try:
     # Wait for the 'Players Management' link to be clickable
-    players_link = WebDriverWait(driver, 20, poll_frequency=0.2).until(
+    players_link = WebDriverWait(driver, 60, poll_frequency=0.2).until(
         EC.element_to_be_clickable((By.LINK_TEXT, "Players Management"))
     )
     time.sleep(5)
@@ -191,7 +191,7 @@ except TimeoutException:
 
 
 # --- Check Table load ---
-wait = WebDriverWait(driver, 30)
+wait = WebDriverWait(driver, 120)
 table_presence = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "gridjs-tr")))
 print("[INFO] Table loaded")
 
