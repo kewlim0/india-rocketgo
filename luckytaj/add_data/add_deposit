@@ -17,9 +17,7 @@ from os_date_utils import select_os_type, format_date_for_calendar
 import re
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import TimeoutException
-import subprocess
 import threading
-import queue
 from terminal_utils import setup_automation_terminal, cleanup_terminal, print_status
 
 
@@ -329,73 +327,14 @@ options = Options()
 
 
 
-# ======== Status Terminal Setup ========
-status_queue = queue.Queue()
-status_process = None
-
-def create_status_terminal():
-    """Create a separate Windows terminal for status display"""
-    global status_process
-    try:
-        # Create a batch file to keep the terminal open with custom size
-        batch_content = '''@echo off
-mode con: cols=80 lines=25
-title Selenium Status Monitor
-echo ========================================
-echo     SELENIUM DEPOSIT AUTOMATION STATUS
-echo ========================================
-echo.
-echo Waiting for status updates...
-echo.
-python -c "import sys, time; exec(open('status_monitor.py').read())" 2>nul
-if not exist status_monitor.py (
-    python -c "import time; [print(f'[{time.strftime(\"%%H:%%M:%%S\")}] Status monitor running... Press Ctrl+C to close') or time.sleep(2) for _ in iter(int, 1)]"
-)
-pause
-'''
-
-        with open('status_terminal.bat', 'w') as f:
-            f.write(batch_content)
-
-        # Start the terminal with custom size
-        status_process = subprocess.Popen(
-            ['cmd', '/c', 'start', 'status_terminal.bat'],
-            shell=True,
-            creationflags=subprocess.CREATE_NEW_CONSOLE
-        )
-        enhanced_print("[INFO] Status terminal window opened")
-        return True
-    except Exception as e:
-        enhanced_print(f"[WARNING] Could not create status terminal: {e}")
-        return False
-
-def log_to_status_terminal(message):
-    """Log message to the status terminal"""
-    try:
-        # Write to a status file that the terminal monitors (without timestamp)
-        with open('status_log.txt', 'a', encoding='utf-8') as f:
-            f.write(f"{message}\n")
-    except Exception as e:
-        pass  # Fail silently if status logging fails
-
+# ======== Status Setup ========
 def enhanced_print(message, status_only=False):
-    """Print to both main console and status terminal"""
-    # Remove emojis from message
-    import re
+    """Print message to console"""
     clean_message = re.sub(r'[\U0001F600-\U0001F64F\U0001F300-\U0001F5FF\U0001F680-\U0001F6FF\U0001F700-\U0001F77F\U0001F780-\U0001F7FF\U0001F800-\U0001F8FF\U0001F900-\U0001F9FF\U0001FA00-\U0001FA6F\U0001FA70-\U0001FAFF\U00002702-\U000027B0\U000024C2-\U0001F251]', '', message)
-
     if not status_only:
         print(clean_message)
-    log_to_status_terminal(clean_message)
 
-# Initialize status logging
 enhanced_print("Starting Selenium Deposit Automation")
-
-# Create status terminal
-if create_status_terminal():
-    enhanced_print("Status monitoring terminal opened")
-else:
-    enhanced_print("Status terminal creation failed - continuing without separate window")
 
 # Setup terminal with custom settings
 setup_automation_terminal("Add Deposit")
@@ -1235,14 +1174,6 @@ with open(last_ids_path, "w", encoding="utf-8") as f:
 gateway_log_path = os.path.join(working_dir, "result", "gateway_config_log.txt")
 with open(gateway_log_path, "a", encoding="utf-8") as f:
     f.write("\n" + summary + "\n")
-
-# Cleanup
-try:
-    if os.path.exists('status_terminal.bat'):
-        os.remove('status_terminal.bat')
-    enhanced_print("Cleanup completed")
-except:
-    pass
 
 cleanup_terminal()
 
